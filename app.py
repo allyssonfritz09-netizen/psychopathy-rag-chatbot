@@ -543,6 +543,21 @@ with st.sidebar:
             unsafe_allow_html=True,
         )
 
+        st.divider()
+    with st.expander("Advanced settings"):
+        field_label(
+            "icon-mask--sliders",
+            "Mirrors the Task 2/3 experiments from the notebook — try raising "
+            "temperature and disabling the fallback rule to see hallucination "
+            "behavior live.",
+        )
+        temperature = st.slider("Temperature", 0.0, 1.0, DEFAULT_TEMPERATURE, 0.1)
+        k = st.slider("Top-k retrieved chunks", 1, 10, DEFAULT_K, 1)
+        fallback_enabled = st.checkbox(
+            "Enable fallback rule (refuse out-of-domain questions)",
+            value=True,
+        )
+
     st.subheader("Source documents")
     for i, src in enumerate(SOURCES):
         with st.container(key=f"source_card_{i}"):
@@ -577,21 +592,6 @@ with st.sidebar:
                 f'{icon(ICON_CHECK_CIRCLE, 14)}API key loaded</span>',
                 unsafe_allow_html=True,
             )
-
-    st.divider()
-    with st.expander("Advanced settings"):
-        field_label(
-            "icon-mask--sliders",
-            "Mirrors the Task 2/3 experiments from the notebook — try raising "
-            "temperature and disabling the fallback rule to see hallucination "
-            "behavior live.",
-        )
-        temperature = st.slider("Temperature", 0.0, 1.0, DEFAULT_TEMPERATURE, 0.1)
-        k = st.slider("Top-k retrieved chunks", 1, 10, DEFAULT_K, 1)
-        fallback_enabled = st.checkbox(
-            "Enable fallback rule (refuse out-of-domain questions)",
-            value=True,
-        )
 
 
 
