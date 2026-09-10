@@ -528,12 +528,9 @@ if "pending_question" not in st.session_state:
 
 with st.container(key="marquee_viewport"):
     with st.container(key="marquee_track"):
-        # Two identical passes render 12 buttons total (6 unique questions x 2),
-        # which is what makes the CSS translateX(-50%) loop seamless.
-        for copy in ("a", "b"):
-            for slug, question in SUGGESTED_QUESTIONS:
-                if st.button(question, key=f"{slug}_{copy}"):
-                    st.session_state.pending_question = question
+        for slug, question in SUGGESTED_QUESTIONS:
+            if st.button(question, key=slug):
+                st.session_state.pending_question = question
 
 with st.sidebar:
     with st.container(key="about_card"):
