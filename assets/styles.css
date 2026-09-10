@@ -446,10 +446,9 @@ p, li { color: var(--ink-muted); }
    translateX(-50%) for a seamless right-to-left loop. Pure CSS — the
    buttons are still fully native/clickable, no JS involved. */
 /* ===== Suggested-questions marquee ===== */
+/* ===== Suggested-questions marquee ===== */
 
 .st-key-marquee_viewport {
-  display: flex;
-  justify-content: center;
   width: 100%;
   overflow: hidden;
   margin: 0 auto 1.6rem;
@@ -461,6 +460,7 @@ p, li { color: var(--ink-muted); }
     black 94%,
     transparent
   );
+
   mask-image: linear-gradient(
     90deg,
     transparent,
@@ -473,35 +473,39 @@ p, li { color: var(--ink-muted); }
 .st-key-marquee_track {
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: nowrap;
   width: max-content;
   gap: 0.65rem;
-  margin: 0 auto;
 
-  animation: marqueeBounce 18s ease-in-out infinite alternate;
-}
-
-.st-key-marquee_viewport:hover .st-key-marquee_track {
-  animation-play-state: paused;
+  animation: suggestedQuestionsFloat 8s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .st-key-marquee_track [data-testid="stButton"] {
   flex: 0 0 auto;
 }
 
-/* ===== Bouncing / ping-pong animation ===== */
+/* ===== Suggested questions movement ===== */
 
-@keyframes marqueeBounce {
-  from {
-    transform: translateX(300px);
+@keyframes suggestedQuestionsFloat {
+  0% {
+    transform: translateX(250px);
   }
 
-  to {
-    transform: translateX(-300px);
+  100% {
+    transform: translateX(210px);
   }
 }
 
+
+.st-key-marquee_viewport:hover .st-key-marquee_track {
+  animation-play-state: paused;
+}
+
+/* Stop suggested-question movement while typing */
+body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
+  animation-play-state: paused;
+}
 
 /* Suggested questions */
 .st-key-marquee_track [data-testid="stButton"] button {
