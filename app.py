@@ -399,47 +399,171 @@ def answer_query(query: str, vectorstore, api_key: str, k: int,
 # --------------------------------------------------------------------------
 st.set_page_config(page_title="Psychopathy RAG Chatbot", page_icon="🧠")
 
-st.title("🧠 Understanding Psychopathy — RAG Chatbot")
-st.caption(
-    "Answers are grounded strictly in three peer-reviewed sources on the "
-    "etiology, clinical assessment, and media portrayal of psychopathy."
+# --------------------------------------------------------------------------
+# Embedded Lucide icons (local, static SVG path data — no CDN, no JS).
+# Each constant holds only the inner <path>/<rect>/<circle> markup; icon()
+# wraps it in a fresh <svg> sized for its call site.
+# --------------------------------------------------------------------------
+ICON_BRAIN = (
+    '<path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />'
+    '<path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />'
+    '<path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" /><path d="M18 18a4 4 0 0 0 2-7.464" />'
+    '<path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" />'
+    '<path d="M6 18a4 4 0 0 1-2-7.464" /><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />'
+)
+ICON_BOOK_OPEN = (
+    '<path d="M12 5v16" />'
+    '<path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2'
+    'H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" />'
+)
+ICON_DNA = (
+    '<path d="m10 16 1.5 1.5" /><path d="m14 8-1.5-1.5" />'
+    '<path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993" /><path d="m16.5 10.5 1 1" />'
+    '<path d="m17 6-2.891-2.891" /><path d="M2 15c6.667-6 13.333 0 20-6" />'
+    '<path d="m20 9 .891.891" /><path d="M3.109 14.109 4 15" /><path d="m6.5 12.5 1 1" />'
+    '<path d="m7 18 2.891 2.891" /><path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993" />'
+)
+ICON_CLIPBOARD_CHECK = (
+    '<rect width="8" height="4" x="8" y="2" rx="1" ry="1" />'
+    '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />'
+    '<path d="m9 14 2 2 4-4" />'
+)
+ICON_TV = '<path d="m17 2-5 5-5-5" /><rect width="20" height="15" x="2" y="7" rx="2" />'
+ICON_KEY_ROUND = (
+    '<path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 '
+    '1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" />'
+    '<circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />'
+)
+ICON_CHECK_CIRCLE = '<circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" />'
+ICON_BAR_CHART = (
+    '<path d="M3 3v16a2 2 0 0 0 2 2h16" /><path d="M18 17V9" /><path d="M13 17V5" />'
+    '<path d="M8 17v-3" />'
+)
+ICON_FILE_TEXT = (
+    '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588'
+    'A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" />'
+    '<path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" />'
+)
+
+SOURCE_ICONS = [ICON_DNA, ICON_CLIPBOARD_CHECK, ICON_TV]
+
+
+def icon(svg_inner: str, size: int = 15) -> str:
+    """Wrap embedded path data in a sized <svg> tag. Presentation-only helper."""
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="{size}" '
+        f'height="{size}" fill="none" stroke="currentColor" stroke-width="2" '
+        f'stroke-linecap="round" stroke-linejoin="round">{svg_inner}</svg>'
+    )
+
+
+def card_header(svg_inner: str, title: str) -> None:
+    """Icon badge + title row, used atop the markdown-built sidebar cards."""
+    st.markdown(
+        f'<div class="card-header"><span class="icon-badge">{icon(svg_inner)}</span>'
+        f'<span class="card-title">{title}</span></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def field_label(mask_class: str, text: str) -> None:
+    """Small icon + caption line, for spots where the native widget (slider,
+    expander) can't take raw HTML in its own label."""
+    st.markdown(
+        f'<span class="icon-mask {mask_class}"></span>'
+        f'<span class="card-body-text">{text}</span>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_source_chunks(docs) -> None:
+    """Shared rendering for the 'Sources retrieved for this answer' expander,
+    used both for history replay and the just-generated answer."""
+    for i, doc in enumerate(docs, start=1):
+        fname = os.path.basename(doc.metadata.get("source", "Unknown"))
+        page = doc.metadata.get("page")
+        label = f"Chunk {i} — {fname}" + (f" (page {page})" if page is not None else "")
+        st.markdown(
+            f'<div class="source-chunk"><div class="source-chunk-label">'
+            f'{icon(ICON_FILE_TEXT, 13)}{label}</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.text(doc.page_content[:400] + ("..." if len(doc.page_content) > 400 else ""))
+
+
+# --------------------------------------------------------------------------
+# Hero
+# --------------------------------------------------------------------------
+st.markdown(
+    f'''
+    <div class="hero-wrap">
+      <div class="hero-inner">
+        <div class="hero-icon">{icon(ICON_BRAIN, 24)}</div>
+        <div>
+          <p class="hero-title">Understanding Psychopathy</p>
+          <p class="hero-subtitle">Answers are grounded strictly in three peer-reviewed
+          sources on the etiology, clinical assessment, and media portrayal of
+          psychopathy — a RAG chatbot with citations, not general knowledge.</p>
+        </div>
+      </div>
+    </div>
+    ''',
+    unsafe_allow_html=True,
 )
 
 with st.sidebar:
-    st.header("About this chatbot")
-    st.write(
-        "This assistant answers **only** from three academic sources — it "
-        "will not draw on general knowledge or media stereotypes about "
-        "psychopathy. Ask an out-of-domain question and it will say so."
-    )
+    with st.container(key="about_card"):
+        card_header(ICON_BOOK_OPEN, "About this chatbot")
+        st.markdown(
+            '<p class="card-body-text">This assistant answers <b>only</b> from three '
+            "academic sources — it will not draw on general knowledge or media "
+            "stereotypes about psychopathy. Ask an out-of-domain question and it "
+            "will say so.</p>",
+            unsafe_allow_html=True,
+        )
 
     st.subheader("Source documents")
-    for src in SOURCES:
-        with st.expander(src["filename"]):
-            st.write(src["citation"])
-            st.caption(src["covers"])
+    for i, src in enumerate(SOURCES):
+        with st.container(key=f"source_card_{i}"):
+            card_header(SOURCE_ICONS[i], src["filename"])
+            with st.expander(src["filename"]):
+                st.markdown(
+                    f'<p class="source-citation">{src["citation"]}</p>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<p class="source-covers">{src["covers"]}</p>',
+                    unsafe_allow_html=True,
+                )
 
     st.divider()
     st.subheader("Groq API key")
-    api_key = get_api_key()
-    if not api_key:
-        st.text_input(
-            "Paste your Groq API key",
-            type="password",
-            key="groq_api_key_input",
-            help="Not saved anywhere — only kept for this browser session. "
-                 "On the deployed version, this is set once via app secrets.",
-        )
+    with st.container(key="apikey_card"):
+        card_header(ICON_KEY_ROUND, "Groq API key")
         api_key = get_api_key()
-    else:
-        st.success("API key loaded.")
+        if not api_key:
+            st.text_input(
+                "Paste your Groq API key",
+                type="password",
+                key="groq_api_key_input",
+                help="Not saved anywhere — only kept for this browser session. "
+                     "On the deployed version, this is set once via app secrets.",
+            )
+            api_key = get_api_key()
+        else:
+            st.markdown(
+                f'<span class="apikey-status apikey-status--ok">'
+                f'{icon(ICON_CHECK_CIRCLE, 14)}API key loaded</span>',
+                unsafe_allow_html=True,
+            )
 
     st.divider()
     with st.expander("Advanced settings"):
-        st.caption(
-            "Mirrors the Task 2/3 experiments from the notebook — try "
-            "raising temperature and disabling the fallback rule to see "
-            "hallucination behavior live."
+        field_label(
+            "icon-mask--sliders",
+            "Mirrors the Task 2/3 experiments from the notebook — try raising "
+            "temperature and disabling the fallback rule to see hallucination "
+            "behavior live.",
         )
         temperature = st.slider("Temperature", 0.0, 1.0, DEFAULT_TEMPERATURE, 0.1)
         k = st.slider("Top-k retrieved chunks", 1, 10, DEFAULT_K, 1)
@@ -457,13 +581,16 @@ vectorstore, index_diagnostics = build_vectorstore()
 
 with st.sidebar:
     with st.expander("Indexing diagnostics"):
-        st.caption("What actually made it into the index, per source, after "
-                   "boilerplate/reference filtering.")
+        field_label(
+            "icon-mask--bar",
+            "What actually made it into the index, per source, after "
+            "boilerplate/reference filtering.",
+        )
         for d in index_diagnostics:
-            st.caption(
-                f"**{d['file']}** — {d['raw_pages']} pages loaded, "
-                f"cutoff at page {d['cutoff_page']}, "
-                f"{d['indexed_chunks']} chunks indexed"
+            st.markdown(
+                f'<div class="diag-row"><b>{d["file"]}</b> — {d["raw_pages"]} pages loaded, '
+                f'cutoff at page {d["cutoff_page"]}, {d["indexed_chunks"]} chunks indexed</div>',
+                unsafe_allow_html=True,
             )
 
 # Chat history
@@ -471,16 +598,12 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
+    avatar = "🧠" if msg["role"] == "assistant" else None
+    with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
         if msg["role"] == "assistant" and msg.get("sources"):
             with st.expander("Sources retrieved for this answer"):
-                for i, doc in enumerate(msg["sources"], start=1):
-                    fname = os.path.basename(doc.metadata.get("source", "Unknown"))
-                    page = doc.metadata.get("page")
-                    label = f"Chunk {i} — {fname}" + (f" (page {page})" if page is not None else "")
-                    st.markdown(f"**{label}**")
-                    st.text(doc.page_content[:400] + ("..." if len(doc.page_content) > 400 else ""))
+                render_source_chunks(msg["sources"])
 
 user_query = st.chat_input("Ask about psychopathy's causes, assessment, or media portrayal...")
 
@@ -489,7 +612,7 @@ if user_query:
     with st.chat_message("user"):
         st.markdown(user_query)
 
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="🧠"):
         with st.spinner("Retrieving context and generating an answer..."):
             try:
                 answer, retrieved_docs = answer_query(
@@ -501,12 +624,7 @@ if user_query:
         st.markdown(answer)
         if retrieved_docs:
             with st.expander("Sources retrieved for this answer"):
-                for i, doc in enumerate(retrieved_docs, start=1):
-                    fname = os.path.basename(doc.metadata.get("source", "Unknown"))
-                    page = doc.metadata.get("page")
-                    label = f"Chunk {i} — {fname}" + (f" (page {page})" if page is not None else "")
-                    st.markdown(f"**{label}**")
-                    st.text(doc.page_content[:400] + ("..." if len(doc.page_content) > 400 else ""))
+                render_source_chunks(retrieved_docs)
 
     st.session_state.messages.append(
         {"role": "assistant", "content": answer, "sources": retrieved_docs}

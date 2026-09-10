@@ -1,47 +1,494 @@
-/* ===== Global ===== */
+/* ==========================================================================
+   Understanding Psychopathy — RAG Chatbot
+   Design system: dark glass / violet accent / research-console aesthetic
+   Pure CSS. No JS. Targets stable data-testid selectors + st.container(key=)
+   generated `.st-key-*` classes wherever native Streamlit markup can't be
+   wrapped directly.
+   ========================================================================== */
+
+:root {
+  --bg-void: #0B0E16;
+  --bg-panel: #10141D;
+  --bg-panel-raised: #141924;
+
+  --glass-fill: rgba(255, 255, 255, 0.035);
+  --glass-fill-hover: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-strong: rgba(255, 255, 255, 0.16);
+
+  --violet: #8B5CF6;
+  --violet-soft: #A78BFA;
+  --violet-dim: rgba(139, 92, 246, 0.16);
+  --violet-line: rgba(139, 92, 246, 0.35);
+
+  --ink: #F1F3F9;
+  --ink-muted: #98A2B8;
+  --ink-faint: #5B6478;
+
+  --success: #34D399;
+  --success-dim: rgba(52, 211, 153, 0.14);
+  --danger: #F87171;
+  --danger-dim: rgba(248, 113, 113, 0.14);
+
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+
+  --shadow-ambient: 0 20px 60px -25px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 0 1px var(--violet-line), 0 12px 32px -12px rgba(139, 92, 246, 0.35);
+
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== App shell ===== */
 
 .stApp {
-    background: #0F172A;
+  background: var(--bg-void);
+  font-family: var(--font-ui);
+}
+
+.stApp::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 42% at 18% -6%, rgba(139, 92, 246, 0.16), transparent 60%),
+    radial-gradient(45% 35% at 88% 4%, rgba(167, 139, 250, 0.10), transparent 65%);
+  background-size: 140% 140%, 140% 140%;
+  animation: auroraDrift 22s var(--ease) infinite alternate;
 }
 
 .block-container {
-    max-width: 1100px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+  max-width: 1080px;
+  padding-top: 1.5rem;
+  padding-bottom: 3rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* ===== Typography ===== */
+h1, h2, h3 { color: var(--ink); }
+p, li { color: var(--ink-muted); }
 
-h1, h2, h3 {
-    color: #F8FAFC;
-}
-
-p {
-    color: #CBD5E1;
-}
-
-/* ===== Sidebar ===== */
+/* ===== Sidebar shell ===== */
 
 [data-testid="stSidebar"] {
-    background: #111827;
-    border-right: 1px solid #374151;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--glass-border);
 }
 
-/* ===== Chat ===== */
-
-.stChatMessage {
-    border-radius: 16px;
+[data-testid="stSidebar"] > div:first-child {
+  padding-top: 1.25rem;
 }
 
-/* ===== Buttons ===== */
+[data-testid="stSidebar"] h2 {
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Glass card primitive ===================================
+   Applied to every st.container(key="...") wrapper in the sidebar,
+   plus native stExpander shells (source docs / advanced settings /
+   diagnostics), so every "module" reads consistently as one system. */
+
+.st-key-about_card,
+.st-key-apikey_card,
+.st-key-source_card_0,
+.st-key-source_card_1,
+.st-key-source_card_2,
+[data-testid="stSidebar"] [data-testid="stExpander"] {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem 1rem;
+  margin-bottom: 0.85rem;
+  box-shadow: var(--shadow-ambient);
+  position: relative;
+  transition: transform 0.22s var(--ease), background 0.22s var(--ease), border-color 0.22s var(--ease);
+}
+
+.st-key-about_card::before,
+.st-key-apikey_card::before,
+.st-key-source_card_0::before,
+.st-key-source_card_1::before,
+.st-key-source_card_2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2.5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--violet), transparent);
+  opacity: 0.7;
+}
+
+.st-key-about_card:hover,
+.st-key-apikey_card:hover,
+.st-key-source_card_0:hover,
+.st-key-source_card_1:hover,
+.st-key-source_card_2:hover,
+[data-testid="stSidebar"] [data-testid="stExpander"]:hover {
+  transform: translateY(-2px);
+  background: var(--glass-fill-hover);
+  border-color: var(--glass-border-strong);
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"] {
+  padding: 0.15rem 0.4rem;
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"] summary {
+  padding: 0.6rem 0.35rem;
+}
+
+/* Card header row: icon glyph + label, built via markdown for the two
+   markdown-based cards (About / API key). Expander-based cards get their
+   icon injected via a masked pseudo-element on the summary (see below). */
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.35rem;
+}
+
+.card-header .icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--violet-dim);
+  color: var(--violet-soft);
+  flex-shrink: 0;
+}
+
+.card-header .icon-badge svg { width: 15px; height: 15px; }
+
+.card-header .card-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.005em;
+}
+
+.card-body-text {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+/* Icon-mask helper: used inline (style="background-color:...") next to
+   native slider/checkbox/expander labels where raw HTML can't be injected
+   into the widget itself — see field_label()/icon_mask() in app.py. */
+
+.icon-mask {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 0.45rem;
+  vertical-align: -2px;
+  background-color: var(--violet-soft);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.icon-mask--sliders {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 5H3'/%3E%3Cpath d='M12 19H3'/%3E%3Cpath d='M14 3v4'/%3E%3Cpath d='M16 17v4'/%3E%3Cpath d='M21 12h-9'/%3E%3Cpath d='M21 19h-5'/%3E%3Cpath d='M21 5h-7'/%3E%3Cpath d='M8 10v4'/%3E%3Cpath d='M8 12H3'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 5H3'/%3E%3Cpath d='M12 19H3'/%3E%3Cpath d='M14 3v4'/%3E%3Cpath d='M16 17v4'/%3E%3Cpath d='M21 12h-9'/%3E%3Cpath d='M21 19h-5'/%3E%3Cpath d='M21 5h-7'/%3E%3Cpath d='M8 10v4'/%3E%3Cpath d='M8 12H3'/%3E%3C/svg%3E");
+}
+
+.icon-mask--bar {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v16a2 2 0 0 0 2 2h16'/%3E%3Cpath d='M18 17V9'/%3E%3Cpath d='M13 17V5'/%3E%3Cpath d='M8 17v-3'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v16a2 2 0 0 0 2 2h16'/%3E%3Cpath d='M18 17V9'/%3E%3Cpath d='M13 17V5'/%3E%3Cpath d='M8 17v-3'/%3E%3C/svg%3E");
+}
+
+/* ===== Source document cards — per-topic glyph ===== */
+
+.st-key-source_card_0 .icon-badge,
+.st-key-source_card_1 .icon-badge,
+.st-key-source_card_2 .icon-badge {
+  background: var(--violet-dim);
+}
+
+.source-citation {
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 0.3rem;
+}
+
+.source-covers {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+
+/* ===== API key card ===== */
+
+.apikey-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  margin-top: 0.4rem;
+}
+
+.apikey-status--ok {
+  color: var(--success);
+  background: var(--success-dim);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+[data-testid="stSidebar"] [data-testid="stTextInput"] input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+[data-testid="stSidebar"] [data-testid="stTextInput"] input:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px var(--violet-dim);
+}
+
+/* ===== Sliders & checkbox (Advanced settings) ===== */
+
+[data-testid="stSidebar"] [data-testid="stSlider"] {
+  padding-top: 0.15rem;
+}
+
+[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
+  box-shadow: 0 0 0 4px var(--violet-dim);
+}
+
+[data-testid="stCheckbox"] label {
+  font-size: 0.85rem;
+}
+
+/* ===== Divider ===== */
+
+[data-testid="stSidebar"] hr {
+  border-color: var(--glass-border);
+  margin: 0.9rem 0;
+}
+
+/* ===== Diagnostics ===== */
+
+.diag-row {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--ink-muted);
+  line-height: 1.7;
+  border-bottom: 1px dashed var(--glass-border);
+  padding: 0.3rem 0;
+}
+
+.diag-row:last-child { border-bottom: none; }
+.diag-row b { color: var(--violet-soft); }
+
+/* ===== Hero ===== */
+
+.hero-wrap {
+  position: relative;
+  padding: 2.1rem 1.9rem 1.9rem;
+  margin-bottom: 1.4rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(139, 92, 246, 0.14), transparent 55%),
+    var(--glass-fill);
+  overflow: hidden;
+  box-shadow: var(--shadow-ambient);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: heroIn 0.7s var(--ease) 0.05s forwards;
+}
+
+.hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: var(--violet-dim);
+  border: 1px solid var(--violet-line);
+  color: var(--violet-soft);
+  flex-shrink: 0;
+}
+
+.hero-icon svg { width: 24px; height: 24px; }
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.001em;
+}
+
+.hero-subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  color: var(--ink-muted);
+  line-height: 1.55;
+  max-width: 62ch;
+  margin: 0;
+  opacity: 0;
+  animation: heroIn 0.7s var(--ease) 0.22s forwards;
+}
+
+/* ===== Alerts (st.info / st.success / st.error) ===== */
+
+[data-testid="stAlert"] {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-ambient);
+}
+
+[data-testid="stAlertContentInfo"] { color: var(--ink); }
+[data-testid="stAlertContentError"] { color: var(--ink); }
+
+/* ===== Chat transcript ===== */
+
+[data-testid="stChatMessage"] {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 0.25rem 0.4rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.6);
+  animation: bubbleIn 0.32s var(--ease) both;
+}
+
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.09), rgba(139, 92, 246, 0.03));
+  border-color: var(--violet-line);
+}
+
+[data-testid="stChatInput"] {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.22s var(--ease), box-shadow 0.22s var(--ease);
+}
+
+[data-testid="stChatInput"]:focus-within {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 4px var(--violet-dim);
+}
+
+[data-testid="stChatInput"] textarea {
+  color: var(--ink);
+}
+
+/* Sources-retrieved expander inside an assistant message */
+
+[data-testid="stChatMessage"] [data-testid="stExpander"] {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  margin-top: 0.4rem;
+}
+
+.source-chunk {
+  border-left: 2px solid var(--violet-line);
+  padding: 0.35rem 0 0.35rem 0.7rem;
+  margin-bottom: 0.55rem;
+}
+
+.source-chunk-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--violet-soft);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.15rem;
+}
+
+/* ===== Buttons (kept for forward-compat; app has none in use today) ===== */
 
 .stButton > button {
-    background: #7C3AED;
-    color: white;
-    border: none;
-    border-radius: 12px;
+  background: var(--violet);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
 .stButton > button:hover {
-    background: #6D28D9;
+  background: #7C3AED;
+  transform: translateY(-1px);
+}
+
+/* ===== Spinner ===== */
+
+[data-testid="stSpinner"] {
+  color: var(--violet-soft);
+}
+
+/* ===== Animations ===== */
+
+@keyframes auroraDrift {
+  0%   { background-position: 0% 0%, 100% 0%; }
+  100% { background-position: 8% 6%, 92% 8%; }
+}
+
+@keyframes heroIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===== Reduced motion ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .stApp::before { animation: none; }
+  .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
+  [data-testid="stChatMessage"] { animation: none; }
+  .st-key-about_card, .st-key-apikey_card,
+  .st-key-source_card_0, .st-key-source_card_1, .st-key-source_card_2,
+  [data-testid="stSidebar"] [data-testid="stExpander"],
+  .stButton > button {
+    transition: none;
+  }
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+  .hero-wrap { padding: 1.5rem 1.2rem; }
+  .hero-title { font-size: 1.5rem; }
+  .hero-inner { gap: 0.75rem; }
 }
