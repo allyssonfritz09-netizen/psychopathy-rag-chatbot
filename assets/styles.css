@@ -91,17 +91,9 @@ p, li { color: var(--ink-muted); }
   letter-spacing: 0.01em;
 }
 
-/* ===== Sidebar shell ===== */
-
-[data-testid="stSidebar"] {
-  background: var(--bg-panel);
-  border-right: 1px solid var(--glass-border);
-  width: 340px !important;
-  min-width: 340px !important;
-}
-
-[data-testid="stSidebar"] > div:first-child {
-  padding-top: 1.25rem;
+[data-testid="stSidebar"] h2 {
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
 }
 
 /* ===== Glass card primitive ===================================
