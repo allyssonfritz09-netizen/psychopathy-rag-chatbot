@@ -447,6 +447,18 @@ ICON_FILE_TEXT = (
 
 SOURCE_ICONS = [ICON_DNA, ICON_CLIPBOARD_CHECK, ICON_TV]
 
+# Suggested-questions marquee: (chip key slug, question text). The icon for
+# each is applied purely in CSS (see .st-key-chip_N selectors), since a
+# native st.button label can't carry raw HTML/SVG.
+SUGGESTED_QUESTIONS = [
+    ("chip_0", "What genetic and neurobiological factors underlie psychopathy?"),
+    ("chip_1", "How is the PCL-R used to assess psychopathy?"),
+    ("chip_2", "How accurately does TV portray antisocial personality traits?"),
+    ("chip_3", "What does reduced threat sensitivity look like neurologically?"),
+    ("chip_4", "How is the PCL-R used in legal and courtroom settings?"),
+    ("chip_5", "What separates psychopathy from ordinary antisocial behavior?"),
+]
+
 
 def icon(svg_inner: str, size: int = 15) -> str:
     """Wrap embedded path data in a sized <svg> tag. Presentation-only helper."""
@@ -511,6 +523,18 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+if "pending_question" not in st.session_state:
+    st.session_state.pending_question = None
+
+with st.container(key="marquee_viewport"):
+    with st.container(key="marquee_track"):
+        # Two identical passes render 12 buttons total (6 unique questions x 2),
+        # which is what makes the CSS translateX(-50%) loop seamless.
+        for copy in ("a", "b"):
+            for slug, question in SUGGESTED_QUESTIONS:
+                if st.button(question, key=f"{slug}_{copy}"):
+                    st.session_state.pending_question = question
+
 with st.sidebar:
     with st.container(key="about_card"):
         card_header(ICON_BOOK_OPEN, "About this chatbot")
@@ -572,26 +596,7 @@ with st.sidebar:
             value=True,
         )
 
-if not api_key:
-    st.info("Enter your Groq API key in the sidebar to start chatting.")
-    st.stop()
 
-# Build (or fetch cached) vectorstore
-vectorstore, index_diagnostics = build_vectorstore()
-
-with st.sidebar:
-    with st.expander("Indexing diagnostics"):
-        field_label(
-            "icon-mask--bar",
-            "What actually made it into the index, per source, after "
-            "boilerplate/reference filtering.",
-        )
-        for d in index_diagnostics:
-            st.markdown(
-                f'<div class="diag-row"><b>{d["file"]}</b> — {d["raw_pages"]} pages loaded, '
-                f'cutoff at page {d["cutoff_page"]}, {d["indexed_chunks"]} chunks indexed</div>',
-                unsafe_allow_html=True,
-            )
 
 # Chat history
 if "messages" not in st.session_state:
@@ -605,7 +610,45 @@ for msg in st.session_state.messages:
             with st.expander("Sources retrieved for this answer"):
                 render_source_chunks(msg["sources"])
 
-user_query = st.chat_input("Ask about psychopathy's causes, assessment, or media portrayal...")
+
+typed_query = st.chat_input("Ask about psychopathy's causes, assessment, or media portrayal...")
+user_query = st.session_state.pending_question or typed_query
+if st.session_state.pending_question:
+    st.session_state.pending_question = None
+
+if not api_key:
+    st.info("Enter your Groq API key in the sidebar to start chatting.")
+    st.stop()
+
+# -------------------------------------------------------------
+# Render the chat UI first, then initialize the knowledge base
+# -------------------------------------------------------------
+
+# Placeholders for content that depends on the vector index
+diagnostics_placeholder = st.empty()
+loading_placeholder = st.empty()
+
+with loading_placeholder.container():
+    with st.status("Initializing knowledge base...", expanded=False):
+        vectorstore, index_diagnostics = build_vectorstore()
+
+loading_placeholder.empty()
+
+with diagnostics_placeholder.container():
+    with st.sidebar:
+        with st.expander("Indexing diagnostics"):
+            field_label(
+                "icon-mask--bar",
+                "What actually made it into the index after filtering."
+            )
+            for d in index_diagnostics:
+                st.markdown(
+                    f'<div class="diag-row"><b>{d["file"]}</b> — '
+                    f'{d["raw_pages"]} pages, cutoff {d["cutoff_page"]}, '
+                    f'{d["indexed_chunks"]} chunks</div>',
+                    unsafe_allow_html=True,
+                )
+
 
 if user_query:
     st.session_state.messages.append({"role": "user", "content": user_query})
