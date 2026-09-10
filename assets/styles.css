@@ -1,0 +1,47 @@
+/* ===== Global ===== */
+
+.stApp {
+    background: #0F172A;
+}
+
+.block-container {
+    max-width: 1100px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* ===== Typography ===== */
+
+h1, h2, h3 {
+    color: #F8FAFC;
+}
+
+p {
+    color: #CBD5E1;
+}
+
+/* ===== Sidebar ===== */
+
+[data-testid="stSidebar"] {
+    background: #111827;
+    border-right: 1px solid #374151;
+}
+
+/* ===== Chat ===== */
+
+.stChatMessage {
+    border-radius: 16px;
+}
+
+/* ===== Buttons ===== */
+
+.stButton > button {
+    background: #7C3AED;
+    color: white;
+    border: none;
+    border-radius: 12px;
+}
+
+.stButton > button:hover {
+    background: #6D28D9;
+}
