@@ -1,56 +1,68 @@
 /* ==========================================================================
    Understanding Psychopathy — RAG Chatbot
-   Design system: dark glass / violet accent / research-console aesthetic
-   Pure CSS. No JS. Targets stable data-testid selectors + st.container(key=)
-   generated `.st-key-*` classes wherever native Streamlit markup can't be
-   wrapped directly.
+   Design system: dark clinical-console / restrained violet accent /
+   fine instrument-grid texture. Pure CSS. No JS. Targets stable
+   data-testid selectors + st.container(key=) generated `.st-key-*`
+   classes wherever native Streamlit markup can't be wrapped directly.
    ========================================================================== */
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+
 :root {
-  --bg-void: #0B0E16;
-  --bg-panel: #10141D;
-  --bg-panel-raised: #141924;
+  /* ---- surface ---- */
+  --bg-void: #08090d;
+  --bg-panel: #0e1016;
+  --bg-panel-raised: #14161f;
 
   --glass-fill: rgba(255, 255, 255, 0.035);
   --glass-fill-hover: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --glass-border-strong: rgba(255, 255, 255, 0.16);
+  --glass-border: rgba(255, 255, 255, 0.085);
+  --glass-border-strong: rgba(255, 255, 255, 0.18);
 
-  --violet: #8B5CF6;
-  --violet-soft: #A78BFA;
-  --violet-dim: rgba(139, 92, 246, 0.16);
-  --violet-line: rgba(139, 92, 246, 0.35);
+  /* ---- accent: single restrained violet, used for interaction only ---- */
+  --violet: #8B7CF6;
+  --violet-bright: #B0A3FF;
+  --violet-dim: rgba(139, 124, 246, 0.14);
+  --violet-line: rgba(139, 124, 246, 0.4);
+  --violet-gradient: linear-gradient(135deg, #8B7CF6 0%, #6C5CE0 100%);
 
-  --ink: #F1F3F9;
-  --ink-muted: #98A2B8;
-  --ink-faint: #5B6478;
+  /* ---- ink ---- */
+  --ink: #EDEEF4;
+  --ink-muted: #979CB0;
+  --ink-faint: #565B6E;
 
   --success: #34D399;
   --success-dim: rgba(52, 211, 153, 0.14);
   --danger: #F87171;
   --danger-dim: rgba(248, 113, 113, 0.14);
 
-  --radius-lg: 22px;
-  --radius-md: 16px;
+  /* ---- radius hierarchy: bigger surface = bigger radius ---- */
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
   --radius-sm: 10px;
+  --radius-pill: 999px;
 
-  --shadow-ambient: 0 20px 60px -25px rgba(0, 0, 0, 0.65);
-  --shadow-glow: 0 0 0 1px var(--violet-line), 0 12px 32px -12px rgba(139, 92, 246, 0.35);
+  --shadow-ambient: 0 24px 60px -30px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 0 1px var(--violet-line), 0 14px 34px -14px rgba(139, 124, 246, 0.38);
 
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  --font-ui: "Poppins", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ===== App shell ===== */
+/* ===== App shell ========================================================= */
 
 .stApp {
   background: var(--bg-void);
   font-family: var(--font-ui);
 }
 
+/* Two independent background layers: a soft violet glow top-corner (kept
+   restrained — one light source, not a decorative wash everywhere) and a
+   very faint instrument dot-grid for a "measurement/console" texture that
+   nods to the clinical-assessment subject matter without shouting it. */
 .stApp::before {
   content: "";
   position: fixed;
@@ -58,24 +70,57 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(60% 42% at 18% -6%, rgba(139, 92, 246, 0.16), transparent 60%),
-    radial-gradient(45% 35% at 88% 4%, rgba(167, 139, 250, 0.10), transparent 65%);
-  background-size: 140% 140%, 140% 140%;
-  animation: auroraDrift 22s var(--ease) infinite alternate;
+    radial-gradient(52% 38% at 14% -8%, rgba(139, 124, 246, 0.14), transparent 62%),
+    radial-gradient(38% 30% at 92% 2%, rgba(176, 163, 255, 0.07), transparent 65%);
+  animation: auroraDrift 26s var(--ease) infinite alternate;
+}
+
+.stApp::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(80% 60% at 50% 0%, black, transparent 85%);
+  -webkit-mask-image: radial-gradient(80% 60% at 50% 0%, black, transparent 85%);
 }
 
 .block-container {
-  max-width: 1080px;
-  padding-top: 1.5rem;
+  max-width: 1040px;
+  padding-top: 2rem;
   padding-bottom: 3rem;
   position: relative;
   z-index: 1;
 }
 
-h1, h2, h3 { color: var(--ink); }
+h1, h2, h3 { color: var(--ink); font-family: var(--font-ui); }
 p, li { color: var(--ink-muted); }
 
-/* ===== Sidebar shell ===== */
+::selection { background: var(--violet-dim); color: var(--ink); }
+
+/* Focus visibility, kept even under all the custom styling below */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--violet-bright);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar — subtle, matches the panel system */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border-strong);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--bg-void);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--violet-line); }
+
+/* ===== Sidebar shell ===================================================== */
 
 [data-testid="stSidebar"] {
   background: var(--bg-panel);
@@ -83,23 +128,21 @@ p, li { color: var(--ink-muted); }
 }
 
 [data-testid="stSidebar"] > div:first-child {
-  padding-top: 1.25rem;
+  padding-top: 1.35rem;
 }
 
 [data-testid="stSidebar"] h2 {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 700;
   letter-spacing: 0.01em;
+  color: var(--ink-muted);
+  margin-top: 0.4rem;
 }
 
-[data-testid="stSidebar"] h2 {
-  font-size: 0.95rem;
-  letter-spacing: 0.01em;
-}
-
-/* ===== Glass card primitive ===================================
-   Applied to every st.container(key="...") wrapper in the sidebar,
-   plus native stExpander shells (source docs / advanced settings /
-   diagnostics), so every "module" reads consistently as one system. */
+/* ===== Glass card primitive =============================================
+   Applied to every st.container(key="...") wrapper in the sidebar, plus
+   native stExpander shells (source docs / advanced settings / diagnostics),
+   so every "module" reads consistently as one system. */
 
 .st-key-about_card,
 .st-key-apikey_card,
@@ -110,11 +153,12 @@ p, li { color: var(--ink-muted); }
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  padding: 0.9rem 1rem 1rem;
-  margin-bottom: 0.85rem;
+  padding: 0.95rem 1.05rem 1.05rem;
+  margin-bottom: 0.75rem;
   box-shadow: var(--shadow-ambient);
   position: relative;
-  transition: transform 0.22s var(--ease), background 0.22s var(--ease), border-color 0.22s var(--ease);
+  transition: transform 0.22s var(--ease), background 0.22s var(--ease),
+    border-color 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
 .st-key-about_card::before,
@@ -129,8 +173,8 @@ p, li { color: var(--ink-muted); }
   bottom: 14px;
   width: 2.5px;
   border-radius: 2px;
-  background: linear-gradient(180deg, var(--violet), transparent);
-  opacity: 0.7;
+  background: var(--violet-gradient);
+  opacity: 0.65;
 }
 
 .st-key-about_card:hover,
@@ -139,60 +183,60 @@ p, li { color: var(--ink-muted); }
 .st-key-source_card_1:hover,
 .st-key-source_card_2:hover,
 [data-testid="stSidebar"] [data-testid="stExpander"]:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   background: var(--glass-fill-hover);
   border-color: var(--glass-border-strong);
+  box-shadow: var(--shadow-ambient), 0 0 0 1px var(--glass-border-strong);
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] {
-  padding: 0.15rem 0.4rem;
+  padding: 0.2rem 0.5rem;
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
-  padding: 0.6rem 0.35rem;
+  padding: 0.65rem 0.4rem;
+  font-weight: 500;
 }
 
-/* Card header row: icon glyph + label, built via markdown for the two
-   markdown-based cards (About / API key). Expander-based cards get their
-   icon injected via a masked pseudo-element on the summary (see below). */
+/* Card header row: icon glyph + label */
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  margin-bottom: 0.35rem;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
 }
 
 .card-header .icon-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   background: var(--violet-dim);
-  color: var(--violet-soft);
+  border: 1px solid var(--violet-line);
+  color: var(--violet-bright);
   flex-shrink: 0;
 }
 
-.card-header .icon-badge svg { width: 15px; height: 15px; }
+.card-header .icon-badge svg { width: 17px; height: 17px; }
 
 .card-header .card-title {
-  font-size: 0.92rem;
+  font-size: 17px;
   font-weight: 600;
   color: var(--ink);
-  letter-spacing: 0.005em;
+  letter-spacing: 0.001em;
 }
 
 .card-body-text {
-  font-size: 0.85rem;
-  line-height: 1.55;
+  font-size: 17px;
+  line-height: 1.65;
   color: var(--ink-muted);
 }
 
-/* Icon-mask helper: used inline (style="background-color:...") next to
-   native slider/checkbox/expander labels where raw HTML can't be injected
-   into the widget itself — see field_label()/icon_mask() in app.py. */
+/* Icon-mask helper: used inline next to native slider/checkbox/expander
+   labels where raw HTML can't be injected into the widget itself. */
 
 .icon-mask {
   display: inline-block;
@@ -200,7 +244,7 @@ p, li { color: var(--ink-muted); }
   height: 14px;
   margin-right: 0.45rem;
   vertical-align: -2px;
-  background-color: var(--violet-soft);
+  background-color: var(--violet-bright);
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
@@ -219,37 +263,34 @@ p, li { color: var(--ink-muted); }
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v16a2 2 0 0 0 2 2h16'/%3E%3Cpath d='M18 17V9'/%3E%3Cpath d='M13 17V5'/%3E%3Cpath d='M8 17v-3'/%3E%3C/svg%3E");
 }
 
-/* ===== Source document cards — per-topic glyph ===== */
-
-.st-key-source_card_0 .icon-badge,
-.st-key-source_card_1 .icon-badge,
-.st-key-source_card_2 .icon-badge {
-  background: var(--violet-dim);
-}
+/* ===== Source document cards — per-topic glyph =========================== */
 
 .source-citation {
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
   color: var(--ink);
-  line-height: 1.5;
-  margin-bottom: 0.3rem;
+  line-height: 1.55;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--glass-border);
 }
 
 .source-covers {
-  font-size: 0.78rem;
+  font-size: 15.5px;
   color: var(--ink-faint);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
-/* ===== API key card ===== */
+/* ===== API key card ======================================================= */
 
 .apikey-status {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  padding: 0.3rem 0.65rem;
-  border-radius: 999px;
+  padding: 0.32rem 0.7rem;
+  border-radius: var(--radius-pill);
   margin-top: 0.4rem;
 }
 
@@ -272,51 +313,57 @@ p, li { color: var(--ink-muted); }
   box-shadow: 0 0 0 3px var(--violet-dim);
 }
 
-/* ===== Sliders & checkbox (Advanced settings) ===== */
+/* ===== Sliders & checkbox (Advanced settings) ============================ */
 
 [data-testid="stSidebar"] [data-testid="stSlider"] {
-  padding-top: 0.15rem;
+  padding-top: 0.2rem;
 }
 
 [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
   box-shadow: 0 0 0 4px var(--violet-dim);
+  background-color: var(--violet-bright) !important;
 }
 
 [data-testid="stCheckbox"] label {
-  font-size: 15px;
+  font-size: 16.5px;
+  color: var(--ink-muted);
 }
 
-/* ===== Divider ===== */
+/* ===== Divider ============================================================= */
 
 [data-testid="stSidebar"] hr {
   border-color: var(--glass-border);
-  margin: 0.9rem 0;
+  margin: 1rem 0;
 }
 
-/* ===== Diagnostics ===== */
+/* ===== Diagnostics ========================================================= */
 
 .diag-row {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.88rem;
   color: var(--ink-muted);
-  line-height: 1.7;
+  line-height: 1.75;
   border-bottom: 1px dashed var(--glass-border);
   padding: 0.3rem 0;
 }
 
 .diag-row:last-child { border-bottom: none; }
-.diag-row b { color: var(--violet-soft); }
+.diag-row b { color: var(--violet-bright); font-weight: 600; }
 
-/* ===== Hero ===== */
+/* ===== Hero ================================================================
+   One deliberate focal point: icon in a bordered tile with a soft violet
+   halo, a tight sans display title, restrained supporting copy. */
 
 .hero-wrap {
   position: relative;
-  padding: 2.1rem 1.9rem 1.9rem;
-  margin-bottom: 1.4rem;
-  border-radius: var(--radius-lg);
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 1.8rem;
+  padding: 2.3rem 2.4rem;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--glass-border);
   background:
-    radial-gradient(120% 140% at 0% 0%, rgba(139, 92, 246, 0.14), transparent 55%),
+    radial-gradient(120% 160% at 0% 0%, rgba(139, 124, 246, 0.12), transparent 55%),
     var(--glass-fill);
   overflow: hidden;
   box-shadow: var(--shadow-ambient);
@@ -327,49 +374,54 @@ p, li { color: var(--ink-muted); }
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.3rem;
   opacity: 0;
-  transform: translateY(14px);
-  animation: heroIn 0.7s var(--ease) 0.05s forwards;
+  transform: translateY(12px);
+  animation: heroIn 0.6s var(--ease) 0.05s forwards;
 }
 
 .hero-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 76px;
-  height: 76px;
-  border-radius: 13px;
+  width: 78px;
+  height: 78px;
+  border-radius: var(--radius-md);
   background: var(--violet-dim);
   border: 1px solid var(--violet-line);
-  color: var(--violet-soft);
+  color: var(--violet-bright);
   flex-shrink: 0;
+  box-shadow: 0 0 0 6px rgba(139, 124, 246, 0.05);
 }
 
-.hero-icon svg { width: 48px; height: 48px; }
+.hero-icon svg { width: 44px; height: 44px; }
 
 .hero-title {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.2;
-  margin: 0 0 0.4rem;
-  letter-spacing: 0.001em;
+  font-family: var(--font-ui);
+  font-size: clamp(2rem, 1.3rem + 2.4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 0.45rem;
+  background: linear-gradient(135deg, var(--ink) 35%, var(--violet-bright) 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .hero-subtitle {
   font-family: var(--font-ui);
-  font-size: 0.92rem;
+  font-size: 1.15rem;
+  font-weight: 400;
   color: var(--ink-muted);
-  line-height: 1.55;
+  line-height: 1.6;
   max-width: 62ch;
   margin: 0;
   opacity: 0;
-  animation: heroIn 0.7s var(--ease) 0.22s forwards;
+  animation: heroIn 0.6s var(--ease) 0.18s forwards;
 }
 
-/* ===== Alerts (st.info / st.success / st.error) ===== */
+/* ===== Alerts (st.info / st.success / st.error) =========================== */
 
 [data-testid="stAlert"] {
   background: var(--glass-fill);
@@ -381,37 +433,128 @@ p, li { color: var(--ink-muted); }
 [data-testid="stAlertContentInfo"] { color: var(--ink); }
 [data-testid="stAlertContentError"] { color: var(--ink); }
 
-/* ===== Chat transcript ===== */
+/* ===== Status widget (index building) ===================================== */
+
+[data-testid="stStatusWidget"] {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-ambient);
+}
+
+/* ===== Chat transcript ===================================================== */
 
 [data-testid="stChatMessage"] {
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  padding: 0.25rem 0.4rem;
+  border-radius: var(--radius-lg);
+  padding: 0.35rem 0.5rem;
   margin-bottom: 0.85rem;
-  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.6);
-  animation: bubbleIn 0.32s var(--ease) both;
+  box-shadow: 0 14px 34px -20px rgba(0, 0, 0, 0.7);
+  animation: bubbleIn 0.3s var(--ease) both;
 }
 
 [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.09), rgba(139, 92, 246, 0.03));
+  background: linear-gradient(180deg, rgba(139, 124, 246, 0.1), rgba(139, 124, 246, 0.03));
   border-color: var(--violet-line);
+}
+
+/* Replace Streamlit's default avatars (a generic person glyph for the
+   user, a plain emoji render for the assistant) with glyphs drawn from
+   the same icon system as the hero brain / sidebar source cards, so the
+   whole conversation reads as one identity rather than mixed defaults. */
+[data-testid="stChatMessageAvatarUser"],
+[data-testid="stChatMessageAvatarAssistant"] {
+  position: relative;
+  background: var(--violet-dim) !important;
+  border: 1px solid var(--violet-line) !important;
+  box-shadow: 0 0 0 1px var(--glass-border-strong);
+  color: transparent !important;
+  overflow: hidden;
+}
+
+[data-testid="stChatMessageAvatarUser"] > *,
+[data-testid="stChatMessageAvatarAssistant"] > * {
+  visibility: hidden !important;
+}
+
+[data-testid="stChatMessageAvatarUser"]::before,
+[data-testid="stChatMessageAvatarAssistant"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 58%;
+  height: 58%;
+  background-color: var(--violet-bright);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* Assistant: brain glyph — identical mark to the hero icon above */
+[data-testid="stChatMessageAvatarAssistant"]::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V5'/%3E%3Cpath d='M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4'/%3E%3Cpath d='M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5'/%3E%3Cpath d='M17.997 5.125a4 4 0 0 1 2.526 5.77'/%3E%3Cpath d='M18 18a4 4 0 0 0 2-7.464'/%3E%3Cpath d='M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517'/%3E%3Cpath d='M6 18a4 4 0 0 1-2-7.464'/%3E%3Cpath d='M6.003 5.125a4 4 0 0 0-2.526 5.77'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V5'/%3E%3Cpath d='M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4'/%3E%3Cpath d='M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5'/%3E%3Cpath d='M17.997 5.125a4 4 0 0 1 2.526 5.77'/%3E%3Cpath d='M18 18a4 4 0 0 0 2-7.464'/%3E%3Cpath d='M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517'/%3E%3Cpath d='M6 18a4 4 0 0 1-2-7.464'/%3E%3Cpath d='M6.003 5.125a4 4 0 0 0-2.526 5.77'/%3E%3C/svg%3E");
+}
+
+/* User: clean outline person glyph, same stroke system as every other icon */
+[data-testid="stChatMessageAvatarUser"]::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
+}
+
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] li {
+  font-size: 19px;
+  line-height: 1.72;
+  color: var(--ink);
 }
 
 [data-testid="stChatInput"] {
   background: var(--bg-panel-raised);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-ambient);
   transition: border-color 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
 [data-testid="stChatInput"]:focus-within {
   border-color: var(--violet);
-  box-shadow: 0 0 0 4px var(--violet-dim);
+  box-shadow: var(--shadow-ambient), 0 0 0 4px var(--violet-dim);
+}
+
+/* Streamlit wraps the raw <textarea> in one or more internal divs, and
+   the <textarea> itself carries a browser-default border — both nest a
+   second rectangle inside the outer pill above. Reset every descendant's
+   border/background/shadow first, then re-apply only what's wanted
+   (button fill, text color) on top of that clean slate. */
+[data-testid="stChatInput"] *,
+[data-testid="stChatInput"] *::before,
+[data-testid="stChatInput"] *::after {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  outline: none !important;
 }
 
 [data-testid="stChatInput"] textarea {
-  color: var(--ink);
+  color: var(--ink) !important;
+  font-size: 18px;
+  caret-color: var(--violet-bright);
+}
+
+[data-testid="stChatInput"] button {
+  background: var(--violet-gradient) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+[data-testid="stChatInput"] button svg {
+  color: white !important;
 }
 
 /* Sources-retrieved expander inside an assistant message */
@@ -420,7 +563,7 @@ p, li { color: var(--ink-muted); }
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .source-chunk {
@@ -430,44 +573,28 @@ p, li { color: var(--ink-muted); }
 }
 
 .source-chunk-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--violet-soft);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--violet-bright);
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.2rem;
 }
 
-/* ===== Suggested-questions marquee =====
-   Real st.button() elements laid out as a flex row inside a nested
-   container: outer .st-key-marquee_viewport clips + edge-fades, inner
-   .st-key-marquee_track is duplicated (2x6 chips) and animated by
-   translateX(-50%) for a seamless right-to-left loop. Pure CSS — the
-   buttons are still fully native/clickable, no JS involved. */
-/* ===== Suggested-questions marquee ===== */
-/* ===== Suggested-questions marquee ===== */
+/* ===== Suggested-questions marquee ========================================
+   Real st.button() elements laid out as a flex row: outer viewport clips +
+   edge-fades, inner track gets a slow, subtle idle drift that pauses on
+   hover/focus so it never fights with reading or typing. */
 
 .st-key-marquee_viewport {
   width: 100%;
   overflow: hidden;
-  margin: 0 auto 1.6rem;
+  margin: 0 auto 1.75rem;
 
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent,
-    black 6%,
-    black 94%,
-    transparent
-  );
-
-  mask-image: linear-gradient(
-    90deg,
-    transparent,
-    black 6%,
-    black 94%,
-    transparent
-  );
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
 }
 
 .st-key-marquee_track {
@@ -475,9 +602,9 @@ p, li { color: var(--ink-muted); }
   align-items: center;
   flex-wrap: nowrap;
   width: max-content;
-  gap: 0.65rem;
+  gap: 0.6rem;
 
-  animation: suggestedQuestionsFloat 8s ease-in-out infinite alternate;
+  animation: suggestedQuestionsFloat 9s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -485,20 +612,13 @@ p, li { color: var(--ink-muted); }
   flex: 0 0 auto;
 }
 
-/* ===== Suggested questions movement ===== */
-
 @keyframes suggestedQuestionsFloat {
-  0% {
-    transform: translateX(250px);
-  }
-
-  100% {
-    transform: translateX(210px);
-  }
+  0%   { transform: translateX(24px); }
+  100% { transform: translateX(-24px); }
 }
 
-
-.st-key-marquee_viewport:hover .st-key-marquee_track {
+.st-key-marquee_viewport:hover .st-key-marquee_track,
+.st-key-marquee_viewport:focus-within .st-key-marquee_track {
   animation-play-state: paused;
 }
 
@@ -507,38 +627,41 @@ body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
   animation-play-state: paused;
 }
 
-/* Suggested questions */
+/* Suggested questions — pill chips */
 .st-key-marquee_track [data-testid="stButton"] button {
   position: relative;
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
-  border-radius: 999px;
-  padding: 0.65rem 1.2rem 0.65rem 3.4rem !important;
+  border-radius: var(--radius-pill);
+  padding: 0.75rem 1.35rem 0.75rem 3.6rem !important;
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: 1.02rem;
   font-weight: 500;
   white-space: nowrap;
-  min-height: 52px;
+  min-height: 56px;
   box-shadow: var(--shadow-ambient);
-  transition: transform 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease),
+    border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:hover {
   transform: translateY(-2px);
   background: var(--glass-fill-hover);
   border-color: var(--violet-line);
+  box-shadow: var(--shadow-glow);
 }
-/* ===== Suggested-question icons ===== */
+
+/* Suggested-question icons */
 
 .st-key-marquee_track [data-testid="stButton"] button::before {
   content: "";
   position: absolute;
-  left: 1rem;
+  left: 1.1rem;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  background-color: var(--violet-soft);
+  width: 19px;
+  height: 19px;
+  background-color: var(--violet-bright);
 
   mask-repeat: no-repeat;
   mask-position: center;
@@ -585,104 +708,42 @@ body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21 21-4.34-4.34'/%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3C/svg%3E");
 }
 
-/* ===== Buttons (kept for forward-compat; app has none in use today) ===== */
+/* ===== Buttons (kept for forward-compat) ================================== */
 
 .stButton > button {
-  background: var(--violet);
+  background: var(--violet-gradient);
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  font-weight: 500;
+  transition: filter 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
 .stButton > button:hover {
-  background: #7C3AED;
+  filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
-/* ===== Spinner ===== */
+/* ===== Spinner ============================================================= */
 
 [data-testid="stSpinner"] {
-  color: var(--violet-soft);
+  color: var(--violet-bright);
 }
 
-/* ===== Readable typography ===== */
+/* ===== Type scale ==========================================================
+   Base sizes set once here; component-specific overrides above only
+   adjust where a surface needs to read as denser (sidebar, diagnostics)
+   or larger (hero, chat) than the base. */
 
-body,
-.stApp {
-  font-size: 17px;
-}
+body, .stApp { font-size: 18px; }
 
-/* Main text */
-.stApp p,
-.stApp li {
-  font-size: 17px;
-  line-height: 1.7;
-}
+.stApp p, .stApp li { font-size: 18px; line-height: 1.72; }
 
-/* Sidebar */
-[data-testid="stSidebar"] {
-  font-size: 15px;
-}
-
+[data-testid="stSidebar"] { font-size: 16.5px; }
 [data-testid="stSidebar"] p,
-[data-testid="stSidebar"] li {
-  font-size: 15px;
-  line-height: 1.65;
-}
+[data-testid="stSidebar"] li { font-size: 16.5px; line-height: 1.62; }
 
-/* Sidebar card titles */
-.card-header .card-title {
-  font-size: 15px;
-}
-
-.card-body-text {
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-.source-citation {
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.source-covers {
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-/* Hero */
-.hero-title {
-  font-family: var(--font-ui);
-  font-size: 2.6rem;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-}
-
-.hero-subtitle {
-  font-size: 16px;
-  line-height: 1.65;
-}
-
-/* Chat messages */
-[data-testid="stChatMessage"] {
-  font-size: 17px;
-}
-
-[data-testid="stChatMessage"] p,
-[data-testid="stChatMessage"] li {
-  font-size: 17px;
-  line-height: 1.75;
-}
-
-
-/* Chat input */
-[data-testid="stChatInput"] textarea {
-  font-size: 17px;
-}
-
-/* ===== Animations ===== */
+/* ===== Animations =========================================================== */
 
 @keyframes auroraDrift {
   0%   { background-position: 0% 0%, 100% 0%; }
@@ -698,12 +759,7 @@ body,
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes marqueeScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* ===== Reduced motion ===== */
+/* ===== Reduced motion ======================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .stApp::before { animation: none; }
@@ -720,14 +776,12 @@ body,
   }
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive ============================================================ */
 
 @media (max-width: 900px) {
-  .hero-wrap { padding: 1.5rem 1.2rem; }
-  .hero-title { font-size: 2rem; }
-  .hero-inner { gap: 0.75rem; }
-}
-
-.hero-title {
-  font-size: 2.6rem !important;
+  .hero-wrap { width: 100%; padding: 1.6rem 1.3rem; }
+  .hero-inner { gap: 0.85rem; }
+  .hero-icon { width: 56px; height: 56px; border-radius: var(--radius-sm); }
+  .hero-icon svg { width: 32px; height: 32px; }
+  .hero-subtitle { font-size: 1.05rem; }
 }
