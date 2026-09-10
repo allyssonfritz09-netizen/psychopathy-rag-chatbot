@@ -510,7 +510,7 @@ st.markdown(
     f'''
     <div class="hero-wrap">
       <div class="hero-inner">
-        <div class="hero-icon">{icon(ICON_BRAIN, 24)}</div>
+        <div class="hero-icon">{icon(ICON_BRAIN, 100)}</div>
         <div>
           <p class="hero-title">Understanding Psychopathy</p>
           <p class="hero-subtitle">Answers are grounded strictly in three peer-reviewed
