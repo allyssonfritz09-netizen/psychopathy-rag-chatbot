@@ -291,7 +291,7 @@ p, li { color: var(--ink-muted); }
 }
 
 [data-testid="stCheckbox"] label {
-  font-size: 0.85rem;
+  font-size: 15px;
 }
 
 /* ===== Divider ===== */
@@ -571,83 +571,84 @@ p, li { color: var(--ink-muted); }
   color: var(--violet-soft);
 }
 
-/* ===== ChatGPT-like typography ===== */
+/* ===== Readable typography ===== */
 
 body,
 .stApp {
-  font-size: 16px;
+  font-size: 17px;
 }
 
-p,
-li {
-  font-size: 16px;
-  line-height: 1.65;
+/* Main text */
+.stApp p,
+.stApp li {
+  font-size: 17px;
+  line-height: 1.7;
 }
 
 /* Sidebar */
 [data-testid="stSidebar"] {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] li {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* Sidebar card titles */
+.card-header .card-title {
+  font-size: 15px;
+}
+
+.card-body-text {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.source-citation {
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
+}
+
+.source-covers {
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 /* Hero */
 .hero-title {
   font-family: var(--font-ui);
-  font-size: 2.4rem;
+  font-size: 2.6rem;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.025em;
 }
 
 .hero-subtitle {
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.65;
 }
 
 /* Chat messages */
 [data-testid="stChatMessage"] {
-  font-size: 16px;
+  font-size: 17px;
 }
 
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] li {
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 17px;
+  line-height: 1.75;
 }
 
 /* Suggested questions */
 .st-key-marquee_track [data-testid="stButton"] button {
-  font-size: 14px;
+  font-size: 15px;
 }
 
-/* Sidebar cards */
-.card-header .card-title {
-  font-size: 14px;
-}
-
-.card-body-text {
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.source-citation {
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.source-covers {
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-/* Input */
+/* Chat input */
 [data-testid="stChatInput"] textarea {
-  font-size: 16px;
+  font-size: 17px;
 }
 
 /* ===== Animations ===== */
