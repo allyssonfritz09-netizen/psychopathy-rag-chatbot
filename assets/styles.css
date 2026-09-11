@@ -1387,3 +1387,19 @@ body, .stApp { font-size: 16.5px; }
   .hero-subtitle { font-size: 1.02rem; }
   .hero-citations { flex-direction: column; gap: 0.7rem; margin-top: 1.2rem; padding-top: 1rem; }
 }
+
+
+/* Restore Markdown list markers inside chat responses */
+[data-testid="stChatMessage"] ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+[data-testid="stChatMessage"] ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+}
+
+[data-testid="stChatMessage"] li {
+  display: list-item !important;
+}
