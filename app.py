@@ -76,6 +76,8 @@ SOURCES = [
                     "Future Directions. Annual Review of Clinical Psychology, 18.",
         "covers": "Genetic, neurobiological, and environmental factors contributing "
                   "to the development of psychopathic traits.",
+        "short_cite": "Patrick, 2022",
+        "short_journal": "Annu. Rev. Clin. Psychol.",
     },
     {
         "filename": "assessment_pclr_metaanalysis.pdf",
@@ -84,6 +86,8 @@ SOURCES = [
                     "of Personality Assessment.",
         "covers": "How the Hare Psychopathy Checklist-Revised (PCL-R) is used to "
                   "clinically and legally assess psychopathy.",
+        "short_cite": "Holper et al., 2025",
+        "short_journal": "J. Personality Assessment",
     },
     {
         "filename": "media_portrayal_lopera2022.pdf",
@@ -92,6 +96,8 @@ SOURCES = [
                     "Series. Social Sciences, 11(3), 133.",
         "covers": "Critical analysis of how antisocial personality traits are "
                   "depicted in television media.",
+        "short_cite": "Lopera-Mármol et al., 2022",
+        "short_journal": "Social Sciences",
     },
 ]
 
@@ -506,18 +512,33 @@ def render_source_chunks(docs) -> None:
 # --------------------------------------------------------------------------
 # Hero
 # --------------------------------------------------------------------------
+# Accent order matches SOURCE_ICONS / the sidebar source cards: 0 = etiology
+# (violet), 1 = assessment (teal), 2 = media (pink) -- so the citation strip
+# below previews the same color coding used throughout the sidebar.
+HERO_CITE_ACCENTS = ["violet", "teal", "pink"]
+
+hero_citations_html = "".join(
+    f'<div class="hero-cite hero-cite--{HERO_CITE_ACCENTS[i]}">'
+    f'<span class="hero-cite-name">{src["short_cite"]}</span>'
+    f'<span class="hero-cite-journal">{src["short_journal"]}</span>'
+    f'</div>'
+    for i, src in enumerate(SOURCES)
+)
+
 st.markdown(
     f'''
     <div class="hero-wrap">
       <div class="hero-inner">
         <div class="hero-icon">{icon(ICON_BRAIN, 100)}</div>
         <div>
+          <p class="hero-eyebrow">Peer-reviewed sources only</p>
           <p class="hero-title">Understanding Psychopathy</p>
-          <p class="hero-subtitle">Answers are grounded strictly in three peer-reviewed
-          sources on the etiology, clinical assessment, and media portrayal of
-          psychopathy — a RAG chatbot with citations, not general knowledge.</p>
+          <p class="hero-subtitle">Every answer traces back to a specific passage in
+          one of the three papers below — nothing outside them, nothing from
+          general training knowledge.</p>
         </div>
       </div>
+      <div class="hero-citations">{hero_citations_html}</div>
     </div>
     ''',
     unsafe_allow_html=True,
@@ -544,7 +565,7 @@ with st.sidebar:
         )
 
         st.divider()
-    with st.expander("Advanced settings"):
+    with st.expander("Advanced settings", expanded=(not get_api_key())):
         field_label(
             "icon-mask--sliders",
             "Mirrors the Task 2/3 experiments from the notebook — try raising "
@@ -558,11 +579,41 @@ with st.sidebar:
             value=True,
         )
 
+        st.divider()
+        with st.container(key="apikey_card"):
+            card_header(ICON_KEY_ROUND, "Groq API key")
+            api_key = get_api_key()
+            if not api_key:
+                st.text_input(
+                    "Paste your Groq API key",
+                    type="password",
+                    key="groq_api_key_input",
+                    help="Not saved anywhere — only kept for this browser session. "
+                         "On the deployed version, this is set once via app secrets.",
+                )
+                api_key = get_api_key()
+            else:
+                st.markdown(
+                    f'<span class="apikey-status apikey-status--ok">'
+                    f'{icon(ICON_CHECK_CIRCLE, 14)}API key loaded</span>',
+                    unsafe_allow_html=True,
+                )
+
+        st.divider()
+        # Filled in further down, once the vectorstore has actually been
+        # built -- this placeholder just reserves the spot inside Advanced
+        # settings so the diagnostics land here instead of as a separate
+        # top-level sidebar expander. Streamlit fills placeholders at the
+        # position they were created, regardless of when in the script
+        # that happens, so this works even though index_diagnostics isn't
+        # known until much later (after the API-key/st.stop() gate below).
+        diagnostics_placeholder = st.empty()
+
     st.subheader("Source documents")
     for i, src in enumerate(SOURCES):
         with st.container(key=f"source_card_{i}"):
             card_header(SOURCE_ICONS[i], src["filename"])
-            with st.expander(src["filename"]):
+            with st.expander("Citation & scope"):
                 st.markdown(
                     f'<p class="source-citation">{src["citation"]}</p>',
                     unsafe_allow_html=True,
@@ -572,26 +623,6 @@ with st.sidebar:
                     unsafe_allow_html=True,
                 )
 
-    st.divider()
-    st.subheader("Groq API key")
-    with st.container(key="apikey_card"):
-        card_header(ICON_KEY_ROUND, "Groq API key")
-        api_key = get_api_key()
-        if not api_key:
-            st.text_input(
-                "Paste your Groq API key",
-                type="password",
-                key="groq_api_key_input",
-                help="Not saved anywhere — only kept for this browser session. "
-                     "On the deployed version, this is set once via app secrets.",
-            )
-            api_key = get_api_key()
-        else:
-            st.markdown(
-                f'<span class="apikey-status apikey-status--ok">'
-                f'{icon(ICON_CHECK_CIRCLE, 14)}API key loaded</span>',
-                unsafe_allow_html=True,
-            )
 
 
 
@@ -621,8 +652,9 @@ if not api_key:
 # Render the chat UI first, then initialize the knowledge base
 # -------------------------------------------------------------
 
-# Placeholders for content that depends on the vector index
-diagnostics_placeholder = st.empty()
+# Placeholder for content that depends on the vector index (the
+# diagnostics placeholder itself was created earlier, inside the sidebar's
+# Advanced settings expander)
 loading_placeholder = st.empty()
 
 with loading_placeholder.container():
@@ -632,19 +664,18 @@ with loading_placeholder.container():
 loading_placeholder.empty()
 
 with diagnostics_placeholder.container():
-    with st.sidebar:
-        with st.expander("Indexing diagnostics"):
-            field_label(
-                "icon-mask--bar",
-                "What actually made it into the index after filtering."
-            )
-            for d in index_diagnostics:
-                st.markdown(
-                    f'<div class="diag-row"><b>{d["file"]}</b> — '
-                    f'{d["raw_pages"]} pages, cutoff {d["cutoff_page"]}, '
-                    f'{d["indexed_chunks"]} chunks</div>',
-                    unsafe_allow_html=True,
-                )
+    card_header(ICON_BAR_CHART, "Indexing diagnostics")
+    field_label(
+        "icon-mask--bar",
+        "What actually made it into the index after filtering."
+    )
+    for d in index_diagnostics:
+        st.markdown(
+            f'<div class="diag-row"><b>{d["file"]}</b> — '
+            f'{d["raw_pages"]} pages, cutoff {d["cutoff_page"]}, '
+            f'{d["indexed_chunks"]} chunks</div>',
+            unsafe_allow_html=True,
+        )
 
 
 if user_query:

@@ -603,8 +603,8 @@ textarea:focus-visible {
 
 .hero-wrap {
   position: relative;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto 1.9rem;
   padding: 2.4rem 2.6rem;
   border-radius: var(--radius-xl);
@@ -714,6 +714,67 @@ textarea:focus-visible {
   margin: 0;
   opacity: 0;
   animation: heroIn 0.6s var(--ease) 0.18s forwards;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin: 0 0 0.55rem;
+  opacity: 0;
+  animation: heroIn 0.6s var(--ease) 0s forwards;
+}
+
+/* Citation strip: a quiet row of "receipts" under the pitch copy -- each
+   chip is the short author/year + journal for one of the three SOURCES,
+   built in app.py from the same data that drives the sidebar cards, so
+   the hero previews exactly what's backing it instead of asserting
+   rigor in prose alone. */
+.hero-citations {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.6rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.hero-cite {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.65rem;
+  border-left: 2px solid var(--row-accent, var(--violet-line));
+  opacity: 0;
+  transform: translateY(6px);
+  animation: heroIn 0.5s var(--ease) forwards;
+}
+
+.hero-cite:nth-child(1) { animation-delay: 0.28s; }
+.hero-cite:nth-child(2) { animation-delay: 0.36s; }
+.hero-cite:nth-child(3) { animation-delay: 0.44s; }
+
+.hero-cite--violet { --row-accent: var(--violet-bright); }
+.hero-cite--teal   { --row-accent: #2DD4BF; }
+.hero-cite--pink   { --row-accent: var(--pink); }
+
+.hero-cite-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.hero-cite-journal {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  line-height: 1.3;
 }
 
 /* ===== Alerts (st.info / st.success / st.error) =========================== */
@@ -1017,20 +1078,27 @@ textarea:focus-visible {
   height: 100%;
 }
 
-/* Suggested questions — static glass cards, icon badge + wrapped text */
+/* Suggested questions — layered spotlight cards: a color-tinted radial
+   glow in the top-left corner, a colored top accent edge, and a bigger
+   circular glowing icon badge, instead of a flat single-tone box with a
+   small flat square badge. Still real st.button() elements -- only the
+   background/border/badge styling changed, grid layout untouched. */
 .st-key-marquee_track [data-testid="stButton"] button {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.7rem;
+  gap: 0.85rem;
   width: 100%;
   height: 100%;
-  min-height: 112px;
-  background: var(--glass-fill);
+  min-height: 122px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, var(--chip-color-dim, var(--violet-dim)), transparent 62%),
+    var(--glass-fill);
   border: 1px solid var(--glass-border);
+  border-top: 2px solid var(--chip-color, var(--violet-line));
   border-radius: var(--radius-lg);
-  padding: 1.05rem 1.15rem 1.15rem !important;
+  padding: 1.15rem 1.2rem 1.25rem !important;
   color: var(--ink);
   font-size: 0.96rem;
   font-weight: 500;
@@ -1041,8 +1109,8 @@ textarea:focus-visible {
   opacity: 0;
   transform: translateY(10px);
   animation: chipIn 0.5s var(--ease) forwards;
-  transition: transform 0.22s var(--ease-spring), background 0.2s var(--ease),
-    border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition: transform 0.22s var(--ease-spring), background 0.25s var(--ease),
+    border-color 0.2s var(--ease), box-shadow 0.25s var(--ease);
 }
 
 /* Staggered entrance — one chip after another instead of all six popping
@@ -1059,40 +1127,48 @@ textarea:focus-visible {
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:hover {
-  transform: translateY(-4px);
-  background: var(--glass-fill-hover);
+  transform: translateY(-4px) scale(1.015);
+  background:
+    radial-gradient(135% 100% at 0% 0%, var(--chip-color-dim, var(--violet-dim)), transparent 68%),
+    var(--glass-fill-hover);
   border-color: var(--chip-color, var(--violet-line));
   box-shadow: 0 0 0 1px var(--chip-color, var(--violet-line)),
     0 18px 38px -16px var(--chip-glow, rgba(124, 111, 240, 0.4));
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:active {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.005);
 }
 
-/* Icon badge — sits above the question text now instead of inline-left */
+/* Icon badge — a soft glowing circle instead of a flat rounded square,
+   echoing the hero icon's glow language (a distinct rule, not shared
+   with .hero-icon, so the hero's own halo/spin is completely unaffected). */
 .st-key-marquee_track [data-testid="stButton"] button::before {
   content: "";
   display: block;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: var(--chip-color-dim, var(--violet-dim));
-  transition: transform 0.22s var(--ease-spring);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--chip-color-dim, var(--violet-dim)), rgba(255, 255, 255, 0.02) 72%);
+  box-shadow: 0 0 0 1px var(--chip-color, var(--violet-line)) inset,
+    0 0 18px -2px var(--chip-glow, rgba(124, 111, 240, 0.4));
+  transition: transform 0.22s var(--ease-spring), box-shadow 0.22s var(--ease);
   flex-shrink: 0;
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:hover::before {
-  transform: scale(1.08) rotate(-4deg);
+  transform: scale(1.1) rotate(-6deg);
+  box-shadow: 0 0 0 1px var(--chip-color, var(--violet-line)) inset,
+    0 0 26px 0px var(--chip-glow, rgba(124, 111, 240, 0.55));
 }
 
 .st-key-marquee_track [data-testid="stButton"] button::after {
   content: "";
   position: absolute;
-  left: calc(1.15rem + 0.32rem);
-  top: calc(1.05rem + 0.32rem);
-  width: 18px;
-  height: 18px;
+  left: calc(1.2rem + 10px);
+  top: calc(1.15rem + 10px);
+  width: 22px;
+  height: 22px;
   background-color: var(--chip-color, var(--violet-bright));
 
   mask-repeat: no-repeat;
@@ -1275,6 +1351,7 @@ body, .stApp { font-size: 16.5px; }
   [data-testid="stChatInput"]::before,
   [data-testid="stChatInput"]::after { animation: none; opacity: 0; }
   .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
+  .hero-eyebrow, .hero-cite { animation: none; opacity: 1; transform: none; }
   .hero-title { animation: none; }
   .hero-icon::before { animation: none; }
   [data-testid="stChatMessage"] { animation: none; }
@@ -1299,4 +1376,5 @@ body, .stApp { font-size: 16.5px; }
   .hero-icon { width: 58px; height: 58px; border-radius: var(--radius-sm); }
   .hero-icon svg { width: 33px; height: 33px; }
   .hero-subtitle { font-size: 1.02rem; }
+  .hero-citations { flex-direction: column; gap: 0.7rem; margin-top: 1.2rem; padding-top: 1rem; }
 }
