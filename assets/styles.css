@@ -125,10 +125,11 @@ textarea:focus-visible {
 [data-testid="stSidebar"] {
   background: var(--bg-panel);
   border-right: 1px solid var(--glass-border);
+  padding: 0 0.35rem;
 }
 
 [data-testid="stSidebar"] > div:first-child {
-  padding-top: 1.35rem;
+  padding-top: 1.4rem;
 }
 
 [data-testid="stSidebar"] h2 {
@@ -136,66 +137,73 @@ textarea:focus-visible {
   font-weight: 700;
   letter-spacing: 0.01em;
   color: var(--ink-muted);
-  margin-top: 0.4rem;
+  margin: 1.1rem 0 0.4rem;
 }
 
-/* ===== Glass card primitive =============================================
-   Applied to every st.container(key="...") wrapper in the sidebar, plus
-   native stExpander shells (source docs / advanced settings / diagnostics),
-   so every "module" reads consistently as one system. */
+/* ===== Sidebar nav rows ===================================================
+   Modern chat-app sidebars read as a flat list — icon + label, a subtle
+   hover highlight, hairline dividers between sections — not a stack of
+   bordered cards. Every st.container(key="...") wrapper and every native
+   stExpander in the sidebar is flattened to that same plain row so the
+   whole panel reads as one clean list instead of boxes nested in boxes. */
 
 .st-key-about_card,
 .st-key-apikey_card,
 .st-key-source_card_0,
 .st-key-source_card_1,
-.st-key-source_card_2,
-[data-testid="stSidebar"] [data-testid="stExpander"] {
-  background: var(--glass-fill);
-  border: 1px solid var(--glass-border);
+.st-key-source_card_2 {
+  background: transparent;
+  border: none;
   border-radius: var(--radius-md);
-  padding: 0.95rem 1.05rem 1.05rem;
-  margin-bottom: 0.75rem;
-  box-shadow: var(--shadow-ambient);
-  position: relative;
-  transition: transform 0.22s var(--ease), background 0.22s var(--ease),
-    border-color 0.22s var(--ease), box-shadow 0.22s var(--ease);
+  padding: 0.6rem 0.55rem;
+  margin-bottom: 0.15rem;
+  box-shadow: none;
+  transition: background 0.16s var(--ease);
 }
 
-.st-key-about_card::before,
-.st-key-apikey_card::before,
-.st-key-source_card_0::before,
-.st-key-source_card_1::before,
-.st-key-source_card_2::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 14px;
-  bottom: 14px;
-  width: 2.5px;
-  border-radius: 2px;
-  background: var(--violet-gradient);
-  opacity: 0.65;
-}
-
-.st-key-about_card:hover,
-.st-key-apikey_card:hover,
 .st-key-source_card_0:hover,
 .st-key-source_card_1:hover,
-.st-key-source_card_2:hover,
-[data-testid="stSidebar"] [data-testid="stExpander"]:hover {
-  transform: translateY(-1px);
+.st-key-source_card_2:hover {
   background: var(--glass-fill-hover);
-  border-color: var(--glass-border-strong);
-  box-shadow: var(--shadow-ambient), 0 0 0 1px var(--glass-border-strong);
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] {
-  padding: 0.2rem 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  margin-bottom: 0.1rem;
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
-  padding: 0.65rem 0.4rem;
+  padding: 0.55rem 0.4rem;
   font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: background 0.16s var(--ease);
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"] summary:hover {
+  background: var(--glass-fill-hover);
+}
+
+/* A source doc's info toggle is nested one level under its filename row
+   — give it a small left guide + indent and quieter type so it reads as
+   a sub-item, not a second, competing copy of the same row above it. */
+.st-key-source_card_0 [data-testid="stExpander"],
+.st-key-source_card_1 [data-testid="stExpander"],
+.st-key-source_card_2 [data-testid="stExpander"] {
+  margin-left: 0.95rem;
+  padding-left: 0.75rem;
+  border-left: 1.5px solid var(--glass-border);
+}
+
+.st-key-source_card_0 [data-testid="stExpander"] summary,
+.st-key-source_card_1 [data-testid="stExpander"] summary,
+.st-key-source_card_2 [data-testid="stExpander"] summary {
+  font-size: 14.5px;
+  color: var(--ink-faint);
+  font-weight: 400;
+  padding: 0.45rem 0.4rem;
 }
 
 /* Card header row: icon glyph + label */
@@ -203,8 +211,8 @@ textarea:focus-visible {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.4rem;
+  gap: 0.55rem;
+  margin-bottom: 0.15rem;
 }
 
 .card-header .icon-badge {
@@ -215,7 +223,6 @@ textarea:focus-visible {
   height: 32px;
   border-radius: 10px;
   background: var(--violet-dim);
-  border: 1px solid var(--violet-line);
   color: var(--violet-bright);
   flex-shrink: 0;
 }
@@ -447,9 +454,10 @@ textarea:focus-visible {
 [data-testid="stChatMessage"] {
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  padding: 0.35rem 0.5rem;
-  margin-bottom: 0.85rem;
+  border-radius: var(--radius-xl);
+  padding: 0.65rem 0.95rem;
+  margin-bottom: 1.1rem;
+  gap: 0.85rem;
   box-shadow: 0 14px 34px -20px rgba(0, 0, 0, 0.7);
   animation: bubbleIn 0.3s var(--ease) both;
 }
@@ -464,22 +472,29 @@ textarea:focus-visible {
    the same icon system as the hero brain / sidebar source cards, so the
    whole conversation reads as one identity rather than mixed defaults. */
 [data-testid="stChatMessageAvatarUser"],
-[data-testid="stChatMessageAvatarAssistant"] {
+[data-testid="stChatMessageAvatarAssistant"],
+[data-testid="stChatMessageAvatarCustom"] {
   position: relative;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
   background: var(--violet-dim) !important;
   border: 1px solid var(--violet-line) !important;
   box-shadow: 0 0 0 1px var(--glass-border-strong);
   color: transparent !important;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 [data-testid="stChatMessageAvatarUser"] > *,
-[data-testid="stChatMessageAvatarAssistant"] > * {
+[data-testid="stChatMessageAvatarAssistant"] > *,
+[data-testid="stChatMessageAvatarCustom"] > * {
   visibility: hidden !important;
 }
 
 [data-testid="stChatMessageAvatarUser"]::before,
-[data-testid="stChatMessageAvatarAssistant"]::before {
+[data-testid="stChatMessageAvatarAssistant"]::before,
+[data-testid="stChatMessageAvatarCustom"]::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -495,8 +510,12 @@ textarea:focus-visible {
   -webkit-mask-size: contain;
 }
 
-/* Assistant: brain glyph — identical mark to the hero icon above */
-[data-testid="stChatMessageAvatarAssistant"]::before {
+/* Assistant: brain glyph — identical mark to the hero icon above.
+   Streamlit renders a passed-in emoji avatar (app.py uses "🧠") under
+   stChatMessageAvatarCustom rather than stChatMessageAvatarAssistant,
+   so both are targeted to make sure the emoji is actually replaced. */
+[data-testid="stChatMessageAvatarAssistant"]::before,
+[data-testid="stChatMessageAvatarCustom"]::before {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V5'/%3E%3Cpath d='M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4'/%3E%3Cpath d='M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5'/%3E%3Cpath d='M17.997 5.125a4 4 0 0 1 2.526 5.77'/%3E%3Cpath d='M18 18a4 4 0 0 0 2-7.464'/%3E%3Cpath d='M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517'/%3E%3Cpath d='M6 18a4 4 0 0 1-2-7.464'/%3E%3Cpath d='M6.003 5.125a4 4 0 0 0-2.526 5.77'/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V5'/%3E%3Cpath d='M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4'/%3E%3Cpath d='M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5'/%3E%3Cpath d='M17.997 5.125a4 4 0 0 1 2.526 5.77'/%3E%3Cpath d='M18 18a4 4 0 0 0 2-7.464'/%3E%3Cpath d='M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517'/%3E%3Cpath d='M6 18a4 4 0 0 1-2-7.464'/%3E%3Cpath d='M6.003 5.125a4 4 0 0 0-2.526 5.77'/%3E%3C/svg%3E");
 }
@@ -509,9 +528,13 @@ textarea:focus-visible {
 
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] li {
-  font-size: 19px;
-  line-height: 1.72;
+  font-size: 28px;
+  line-height: 1.78;
   color: var(--ink);
+}
+
+[data-testid="stChatMessage"] p:not(:last-child) {
+  margin-bottom: 0.7rem;
 }
 
 [data-testid="stChatInput"] {
@@ -562,19 +585,30 @@ textarea:focus-visible {
 [data-testid="stChatMessage"] [data-testid="stExpander"] {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-  margin-top: 0.5rem;
+  border-radius: var(--radius-md);
+  margin-top: 0.6rem;
+}
+
+[data-testid="stChatMessage"] [data-testid="stExpander"] summary {
+  font-size: 24px;
+  padding: 0.7rem 0.5rem;
+}
+
+[data-testid="stChatMessage"] [data-testid="stExpander"] [data-testid="stText"],
+[data-testid="stChatMessage"] [data-testid="stExpander"] pre {
+  font-size: 24px;
+  line-height: 1.78;
 }
 
 .source-chunk {
   border-left: 2px solid var(--violet-line);
-  padding: 0.35rem 0 0.35rem 0.7rem;
-  margin-bottom: 0.55rem;
+  padding: 0.4rem 0 0.4rem 0.8rem;
+  margin-bottom: 0.65rem;
 }
 
 .source-chunk-label {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--violet-bright);
   display: flex;
