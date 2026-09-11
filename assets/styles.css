@@ -91,17 +91,23 @@
   animation: auroraDrift 22s var(--ease) infinite alternate;
 }
 
+/* A second, independent layer of large soft "orbs" that drift on their own
+   translate-based path (not just a shared background-position shift), so
+   the backdrop reads as a few blobs of light quietly floating past one
+   another rather than one wash breathing in place. Kept low-opacity and
+   heavily blurred — depth, not decoration. */
 .stApp::after {
   content: "";
   position: fixed;
-  inset: 0;
+  inset: -10%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.45;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(85% 65% at 50% 0%, black, transparent 88%);
-  -webkit-mask-image: radial-gradient(85% 65% at 50% 0%, black, transparent 88%);
+  background:
+    radial-gradient(circle, rgba(124, 111, 246, 0.16), transparent 70%) 8% 18% / 34% 34% no-repeat,
+    radial-gradient(circle, rgba(34, 211, 238, 0.12), transparent 70%) 88% 68% / 30% 30% no-repeat,
+    radial-gradient(circle, rgba(244, 114, 182, 0.1), transparent 70%) 70% 6% / 26% 26% no-repeat;
+  filter: blur(6px);
+  animation: orbFloat 34s var(--ease) infinite alternate;
 }
 
 .block-container {
@@ -110,6 +116,25 @@
   padding-bottom: 3rem;
   position: relative;
   z-index: 1;
+}
+
+/* Instrument dot-grid + a whisper of film grain, scoped to the content
+   column (moved off the fixed app-level layers above so it doesn't fight
+   their animation) and faded out toward the bottom of the page. */
+.block-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 28px 28px, 120px 120px;
+  mix-blend-mode: overlay;
+  mask-image: radial-gradient(85% 55% at 50% 0%, black, transparent 88%);
+  -webkit-mask-image: radial-gradient(85% 55% at 50% 0%, black, transparent 88%);
 }
 
 h1, h2, h3 { color: var(--ink); font-family: var(--font-ui); }
@@ -455,6 +480,7 @@ textarea:focus-visible {
 
 .hero-wrap::after {
   content: "";
+
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -1016,6 +1042,12 @@ body, .stApp { font-size: 16.5px; }
   100% { background-position: 10% 8%, 88% 10%, 42% 92%; }
 }
 
+@keyframes orbFloat {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-2%, 3%, 0) scale(1.06); }
+  100% { transform: translate3d(3%, -2%, 0) scale(0.98); }
+}
+
 @keyframes haloSpin {
   to { transform: rotate(360deg); }
 }
@@ -1038,6 +1070,7 @@ body, .stApp { font-size: 16.5px; }
 
 @media (prefers-reduced-motion: reduce) {
   .stApp::before { animation: none; }
+  .stApp::after { animation: none; }
   .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
   .hero-title { animation: none; }
   .hero-icon::before { animation: none; }
