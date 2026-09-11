@@ -1071,13 +1071,13 @@ textarea:focus-visible {
 
 .st-key-marquee_viewport {
   width: 100%;
-  margin: 0 auto clamp(0.35rem, 0.95vh, 0.65rem);
+  margin: 0 auto clamp(0.6rem, 1.3vh, 0.95rem);
 }
 
 .st-key-marquee_track {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(0.22rem, 0.5vh, 0.34rem);
+  gap: clamp(0.6rem, 1.3vh, 0.95rem);
 }
 
 .st-key-marquee_track [data-testid="stButton"] {
@@ -1095,7 +1095,7 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(0.22rem, 0.55vh, 0.34rem);
+  gap: clamp(0.5rem, 1vh, 0.65rem);
   width: 100%;
   /* Fixed, not min-height: with min-height, each grid row only grows as
      tall as its own row's longest-wrapping question, so a row where every
@@ -1103,14 +1103,14 @@ textarea:focus-visible {
      shorter, 1-line question. A shared fixed height -- roomy enough for
      the longest question at any of these sizes -- makes all six cards
      match regardless of which row they land in or how their text wraps. */
-  height: clamp(90px, 13vh, 112px);
+  height: clamp(106px, 15vh, 132px);
   background:
     radial-gradient(120% 90% at 0% 0%, var(--chip-color-dim, var(--violet-dim)), transparent 62%),
     var(--glass-fill);
   border: 1px solid var(--glass-border);
   border-top: 2px solid var(--chip-color, var(--violet-line));
   border-radius: var(--radius-lg);
-  padding: clamp(0.3rem, 0.75vh, 0.45rem) clamp(0.42rem, 0.85vw, 0.58rem) clamp(0.33rem, 0.75vh, 0.5rem) !important;
+  padding: clamp(0.85rem, 1.5vh, 1.1rem) clamp(0.9rem, 1.3vw, 1.15rem) !important;
   color: var(--ink);
   font-size: clamp(0.62rem, 0.85vh, 0.7rem);
   font-weight: 500;
