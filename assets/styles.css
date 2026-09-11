@@ -241,14 +241,14 @@ textarea:focus-visible {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.82rem;
+  gap: 0.4rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--ink-faint);
-  margin: 1.3rem 0 0.55rem;
-  padding-left: 0.55rem;
+  margin: 1.1rem 0 0.4rem;
+  padding-left: 0.5rem;
 }
 
 /* Small gradient tick before each section label — a quiet visual anchor
@@ -257,7 +257,7 @@ textarea:focus-visible {
 [data-testid="stSidebar"] h3::before {
   content: "";
   width: 3px;
-  height: 12px;
+  height: 10px;
   border-radius: var(--radius-pill);
   background: var(--accent-gradient);
   flex-shrink: 0;
@@ -279,8 +279,8 @@ textarea:focus-visible {
   position: relative;
   border: none;
   border-radius: var(--radius-md);
-  padding: 0.65rem 0.6rem 0.65rem 0.85rem;
-  margin-bottom: 0.2rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.7rem;
+  margin-bottom: 0.15rem;
   box-shadow: none;
   overflow: hidden;
 
@@ -354,9 +354,9 @@ textarea:focus-visible {
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
-  padding: 0.6rem 0.5rem;
+  padding: 0.45rem 0.4rem;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 13.5px;
   color: var(--violet-bright) !important;
   border-radius: var(--radius-sm);
   transition: background 0.16s var(--ease), color 0.16s var(--ease);
@@ -422,17 +422,17 @@ textarea:focus-visible {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.15rem;
+  gap: 0.5rem;
+  margin-bottom: 0.1rem;
 }
 
 .card-header .icon-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
+  width: 27px;
+  height: 27px;
+  border-radius: 9px;
   background: var(--row-dim, var(--accent-gradient-soft));
   border: 1px solid var(--row-line, var(--violet-line));
   color: var(--row-color, var(--violet-bright));
@@ -449,18 +449,18 @@ textarea:focus-visible {
   box-shadow: 0 0 0 5px var(--row-dim, var(--violet-dim));
 }
 
-.card-header .icon-badge svg { width: 17px; height: 17px; }
+.card-header .icon-badge svg { width: 14px; height: 14px; }
 
 .card-header .card-title {
-  font-size: 16.5px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--ink);
   letter-spacing: 0.001em;
 }
 
 .card-body-text {
-  font-size: 16.5px;
-  line-height: 1.65;
+  font-size: 13px;
+  line-height: 1.55;
   color: var(--ink-muted);
 }
 
@@ -496,18 +496,18 @@ textarea:focus-visible {
 
 .source-citation {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 12px;
   color: var(--ink);
-  line-height: 1.55;
-  margin-bottom: 0.4rem;
-  padding-bottom: 0.5rem;
+  line-height: 1.5;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px dashed var(--glass-border);
 }
 
 .source-covers {
-  font-size: 15px;
+  font-size: 12.5px;
   color: var(--ink-faint);
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 /* ===== API key card ======================================================= */
@@ -515,12 +515,12 @@ textarea:focus-visible {
 .apikey-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.92rem;
+  gap: 0.35rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.34rem 0.75rem;
+  padding: 0.28rem 0.65rem;
   border-radius: var(--radius-pill);
-  margin-top: 0.4rem;
+  margin-top: 0.35rem;
 }
 
 .apikey-status--ok {
@@ -668,8 +668,8 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(26px, 4.2vh, 40px);
-  height: clamp(26px, 4.2vh, 40px);
+  width: clamp(32px, 5.2vh, 48px);
+  height: clamp(32px, 5.2vh, 48px);
   border-radius: var(--radius-md);
   background: var(--bg-panel-raised);
   border: 1px solid var(--violet-line);
@@ -678,21 +678,44 @@ textarea:focus-visible {
   isolation: isolate;
 }
 
-.hero-icon::before {
+/* Two small 4-point sparkle stars twinkling at opposite corners of the
+   icon, instead of a blurred rotating halo behind it. */
+.hero-icon::before,
+.hero-icon::after {
   content: "";
   position: absolute;
-  inset: -3px;
-  border-radius: inherit;
-  z-index: -1;
-  background: conic-gradient(from 0deg, #7C6FF0, #22D3EE, #F472B6, #7C6FF0);
-  opacity: 0.55;
-  filter: blur(10px);
-  animation: haloSpin 8s linear infinite;
+  clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+  z-index: 2;
+  animation: sparkleTwinkle 2.6s ease-in-out infinite;
+}
+
+.hero-icon::before {
+  top: -9px;
+  right: -7px;
+  width: 15px;
+  height: 15px;
+  background: linear-gradient(135deg, #A99BFF, #7DE8F7);
+  filter: drop-shadow(0 0 6px rgba(169, 155, 255, 0.75));
+}
+
+.hero-icon::after {
+  bottom: -6px;
+  left: -6px;
+  width: 9px;
+  height: 9px;
+  background: linear-gradient(135deg, #7DE8F7, #F472B6);
+  filter: drop-shadow(0 0 5px rgba(125, 232, 247, 0.7));
+  animation-delay: 1.1s;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.6) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(20deg); }
 }
 
 .hero-icon svg {
-  width: clamp(14px, 2.3vh, 21px);
-  height: clamp(14px, 2.3vh, 21px);
+  width: clamp(18px, 2.9vh, 27px);
+  height: clamp(18px, 2.9vh, 27px);
   filter: drop-shadow(0 0 10px rgba(124, 111, 240, 0.55));
 }
 
@@ -1278,9 +1301,9 @@ body, .stApp { font-size: 16.5px; }
 
 .stApp p, .stApp li { font-size: 16.5px; line-height: 1.68; }
 
-[data-testid="stSidebar"] { font-size: 15.5px; }
+[data-testid="stSidebar"] { font-size: 13px; }
 [data-testid="stSidebar"] p,
-[data-testid="stSidebar"] li { font-size: 15.5px; line-height: 1.6; }
+[data-testid="stSidebar"] li { font-size: 13px; line-height: 1.5; }
 
 /* ===== Animations =========================================================== */
 
@@ -1312,10 +1335,6 @@ body, .stApp { font-size: 16.5px; }
   100% { transform: scale(1.045); opacity: 0; border-width: 0.5px; }
 }
 
-@keyframes haloSpin {
-  to { transform: rotate(360deg); }
-}
-
 @keyframes textShine {
   0%   { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
@@ -1343,7 +1362,7 @@ body, .stApp { font-size: 16.5px; }
   .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
   .hero-eyebrow, .hero-cite { animation: none; opacity: 1; transform: none; }
   .hero-title { animation: none; }
-  .hero-icon::before { animation: none; }
+  .hero-icon::before, .hero-icon::after { animation: none; opacity: 1; transform: none; }
   [data-testid="stChatMessage"] { animation: none; }
   .st-key-about_card, .st-key-apikey_card,
   .st-key-source_card_0, .st-key-source_card_1, .st-key-source_card_2,
@@ -1363,8 +1382,8 @@ body, .stApp { font-size: 16.5px; }
 @media (max-width: 900px) {
   .hero-wrap { width: 100%; padding: 1.7rem 1.4rem; }
   .hero-inner { gap: 0.9rem; }
-  .hero-icon { width: 58px; height: 58px; border-radius: var(--radius-sm); }
-  .hero-icon svg { width: 33px; height: 33px; }
+  .hero-icon { width: 70px; height: 70px; border-radius: var(--radius-sm); }
+  .hero-icon svg { width: 40px; height: 40px; }
   .hero-subtitle { font-size: 1.02rem; }
   .hero-citations { flex-direction: column; gap: 0.7rem; margin-top: 1.2rem; padding-top: 1rem; }
 }
