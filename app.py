@@ -631,7 +631,7 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     avatar = None
     with st.chat_message(msg["role"], avatar=avatar):
-        st.markdown(msg["content"])
+        st.markdown(msg["content"], unsafe_allow_html=True)
         if msg["role"] == "assistant" and msg.get("sources"):
             with st.expander("Sources retrieved for this answer"):
                 render_source_chunks(msg["sources"])
@@ -690,7 +690,7 @@ if user_query:
             except Exception as e:
                 answer = f"Something went wrong calling Groq: {e}"
                 retrieved_docs = []
-        st.markdown(answer)
+        st.markdown(answer, unsafe_allow_html=True)
         if retrieved_docs:
             with st.expander("Sources retrieved for this answer"):
                 render_source_chunks(retrieved_docs)
