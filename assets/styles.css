@@ -608,17 +608,18 @@ textarea:focus-visible {
 
   background: linear-gradient(
     120deg,
-    rgba(255,255,255,0.14),
+    rgba(255, 255, 255, 0.14),
     transparent 30%,
     transparent 70%,
-    rgba(34,211,238,0.12)
+    rgba(34, 211, 238, 0.12)
   );
 
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
 
-  /* ADD THIS */
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
   mask-composite: exclude;
 
   pointer-events: none;
@@ -841,11 +842,39 @@ textarea:focus-visible {
 /* ===== Chat input — floating pill with an animated gradient glow ========= */
 
 [data-testid="stChatInput"] {
+  position: relative;
   background: var(--bg-panel-raised);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-ambient);
   transition: border-color 0.22s var(--ease), box-shadow 0.22s var(--ease), transform 0.22s var(--ease);
+}
+
+/* A shockwave — two staggered rings expand outward from the input and
+   fade, like a sonar ping, so the app reads as idly "beating" while
+   waiting for input. Recolored from the API-key badge's green to the
+   input's own violet/cyan accent. Both pause the instant the person
+   actually clicks in, so the motion never competes with typing. */
+[data-testid="stChatInput"]::before,
+[data-testid="stChatInput"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid var(--violet-line);
+  animation: chatInputShockwave 2.6s var(--ease) infinite;
+  pointer-events: none;
+}
+
+[data-testid="stChatInput"]::after {
+  animation-delay: 1.3s;
+  border-color: var(--cyan-line);
+}
+
+[data-testid="stChatInput"]:focus-within::before,
+[data-testid="stChatInput"]:focus-within::after {
+  animation-play-state: paused;
+  opacity: 0;
 }
 
 [data-testid="stChatInput"]:hover {
@@ -1190,6 +1219,12 @@ body, .stApp { font-size: 16.5px; }
   100% { transform: scale(1.35); opacity: 0; }
 }
 
+@keyframes chatInputShockwave {
+  0%   { transform: scale(1);     opacity: 0.55; border-width: 1.5px; }
+  60%  { opacity: 0.15; }
+  100% { transform: scale(1.045); opacity: 0; border-width: 0.5px; }
+}
+
 @keyframes haloSpin {
   to { transform: rotate(360deg); }
 }
@@ -1216,6 +1251,8 @@ body, .stApp { font-size: 16.5px; }
   [data-testid="stSidebar"]::before,
   [data-testid="stSidebar"]::after { animation: none; }
   .apikey-status--ok::after { animation: none; opacity: 0; }
+  [data-testid="stChatInput"]::before,
+  [data-testid="stChatInput"]::after { animation: none; opacity: 0; }
   .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
   .hero-title { animation: none; }
   .hero-icon::before { animation: none; }
