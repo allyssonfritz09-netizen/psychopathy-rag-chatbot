@@ -1,55 +1,69 @@
 /* ==========================================================================
    Understanding Psychopathy — RAG Chatbot
-   Design system: dark clinical-console / restrained violet accent /
-   fine instrument-grid texture. Pure CSS. No JS. Targets stable
-   data-testid selectors + st.container(key=) generated `.st-key-*`
-   classes wherever native Streamlit markup can't be wrapped directly.
+   Design system v2: modern AI-app aesthetic — layered aurora-mesh backdrop,
+   frosted glass surfaces, a two-tone indigo/cyan accent with warm pink for
+   depth, soft glow interactions, and a cleaner sidebar nav. Pure CSS, no JS.
+   Targets stable data-testid selectors + st.container(key=) generated
+   `.st-key-*` classes wherever native Streamlit markup can't be wrapped
+   directly. This file is presentation-only — no functional/backend change.
    ========================================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root {
   /* ---- surface ---- */
-  --bg-void: #08090d;
-  --bg-panel: #0e1016;
-  --bg-panel-raised: #14161f;
+  --bg-void: #060710;
+  --bg-panel: #0b0d17;
+  --bg-panel-raised: #12141f;
 
-  --glass-fill: rgba(255, 255, 255, 0.035);
-  --glass-fill-hover: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.085);
-  --glass-border-strong: rgba(255, 255, 255, 0.18);
+  --glass-fill: rgba(255, 255, 255, 0.045);
+  --glass-fill-hover: rgba(255, 255, 255, 0.075);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-strong: rgba(255, 255, 255, 0.2);
 
-  /* ---- accent: single restrained violet, used for interaction only ---- */
-  --violet: #8B7CF6;
-  --violet-bright: #B0A3FF;
-  --violet-dim: rgba(139, 124, 246, 0.14);
-  --violet-line: rgba(139, 124, 246, 0.4);
-  --violet-gradient: linear-gradient(135deg, #8B7CF6 0%, #6C5CE0 100%);
+  /* ---- accent system: indigo (primary) + cyan (secondary) + pink (spark) ---- */
+  --violet: #7C6FF0;
+  --violet-bright: #A99BFF;
+  --violet-dim: rgba(124, 111, 240, 0.16);
+  --violet-line: rgba(124, 111, 240, 0.45);
+
+  --cyan: #22D3EE;
+  --cyan-dim: rgba(34, 211, 238, 0.16);
+  --cyan-line: rgba(34, 211, 238, 0.4);
+
+  --pink: #F472B6;
+  --pink-dim: rgba(244, 114, 182, 0.16);
+
+  --accent-gradient: linear-gradient(135deg, #8B7CF6 0%, #6366F1 45%, #22D3EE 100%);
+  --accent-gradient-soft: linear-gradient(135deg, rgba(139,124,246,0.22), rgba(34,211,238,0.14));
+  --text-gradient: linear-gradient(120deg, #F5F6FF 10%, #B9AEFF 55%, #7DE8F7 100%);
 
   /* ---- ink ---- */
-  --ink: #EDEEF4;
-  --ink-muted: #979CB0;
-  --ink-faint: #565B6E;
+  --ink: #F1F2FA;
+  --ink-muted: #9DA1B8;
+  --ink-faint: #5C6079;
 
   --success: #34D399;
-  --success-dim: rgba(52, 211, 153, 0.14);
-  --danger: #F87171;
-  --danger-dim: rgba(248, 113, 113, 0.14);
+  --success-dim: rgba(52, 211, 153, 0.15);
+  --danger: #FB7185;
+  --danger-dim: rgba(251, 113, 133, 0.15);
 
   /* ---- radius hierarchy: bigger surface = bigger radius ---- */
-  --radius-xl: 26px;
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 15px;
+  --radius-sm: 11px;
   --radius-pill: 999px;
 
-  --shadow-ambient: 0 24px 60px -30px rgba(0, 0, 0, 0.75);
-  --shadow-glow: 0 0 0 1px var(--violet-line), 0 14px 34px -14px rgba(139, 124, 246, 0.38);
+  --shadow-ambient: 0 26px 64px -30px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 0 1px var(--violet-line), 0 16px 40px -14px rgba(124, 111, 240, 0.45);
+  --shadow-glow-cyan: 0 0 0 1px var(--cyan-line), 0 16px 40px -14px rgba(34, 211, 238, 0.35);
 
   --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ===== App shell ========================================================= */
@@ -59,10 +73,10 @@
   font-family: var(--font-ui);
 }
 
-/* Two independent background layers: a soft violet glow top-corner (kept
-   restrained — one light source, not a decorative wash everywhere) and a
-   very faint instrument dot-grid for a "measurement/console" texture that
-   nods to the clinical-assessment subject matter without shouting it. */
+/* Layered backdrop: a slow-drifting aurora mesh (three color pools instead
+   of one), a faint instrument dot-grid for texture, and a soft vignette so
+   content stays legible against the glow. Kept subtle — one atmosphere,
+   not a wash of color everywhere. */
 .stApp::before {
   content: "";
   position: fixed;
@@ -70,9 +84,11 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(52% 38% at 14% -8%, rgba(139, 124, 246, 0.14), transparent 62%),
-    radial-gradient(38% 30% at 92% 2%, rgba(176, 163, 255, 0.07), transparent 65%);
-  animation: auroraDrift 26s var(--ease) infinite alternate;
+    radial-gradient(46% 34% at 10% -6%, rgba(124, 111, 246, 0.22), transparent 62%),
+    radial-gradient(36% 30% at 96% 4%, rgba(34, 211, 238, 0.12), transparent 65%),
+    radial-gradient(40% 32% at 50% 108%, rgba(244, 114, 182, 0.08), transparent 68%);
+  background-size: 140% 140%, 140% 140%, 160% 160%;
+  animation: auroraDrift 22s var(--ease) infinite alternate;
 }
 
 .stApp::after {
@@ -81,15 +97,15 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 26px 26px;
-  mask-image: radial-gradient(80% 60% at 50% 0%, black, transparent 85%);
-  -webkit-mask-image: radial-gradient(80% 60% at 50% 0%, black, transparent 85%);
+  opacity: 0.45;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(85% 65% at 50% 0%, black, transparent 88%);
+  -webkit-mask-image: radial-gradient(85% 65% at 50% 0%, black, transparent 88%);
 }
 
 .block-container {
-  max-width: 1040px;
+  max-width: 1060px;
   padding-top: 2rem;
   padding-bottom: 3rem;
   position: relative;
@@ -123,48 +139,81 @@ textarea:focus-visible {
 /* ===== Sidebar shell ===================================================== */
 
 [data-testid="stSidebar"] {
-  background: var(--bg-panel);
+  background: linear-gradient(180deg, var(--bg-panel) 0%, #0a0b13 100%);
   border-right: 1px solid var(--glass-border);
-  padding: 0 0.35rem;
+  padding: 0 0.4rem;
 }
 
 [data-testid="stSidebar"] > div:first-child {
-  padding-top: 1.4rem;
+  padding-top: 1.5rem;
 }
 
 [data-testid="stSidebar"] h2 {
-  font-size: 1rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
-  color: var(--ink-muted);
-  margin: 1.1rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  margin: 1.3rem 0 0.55rem;
+  padding-left: 0.55rem;
 }
 
 /* ===== Sidebar nav rows ===================================================
    Modern chat-app sidebars read as a flat list — icon + label, a subtle
-   hover highlight, hairline dividers between sections — not a stack of
-   bordered cards. Every st.container(key="...") wrapper and every native
-   stExpander in the sidebar is flattened to that same plain row so the
-   whole panel reads as one clean list instead of boxes nested in boxes. */
+   hover highlight with a left accent bar that slides in, hairline dividers
+   between sections — not a stack of bordered cards. Every
+   st.container(key="...") wrapper and every native stExpander in the
+   sidebar is flattened to that same plain row so the whole panel reads as
+   one clean list instead of boxes nested in boxes. */
 
 .st-key-about_card,
 .st-key-apikey_card,
 .st-key-source_card_0,
 .st-key-source_card_1,
 .st-key-source_card_2 {
+  position: relative;
   background: transparent;
   border: none;
   border-radius: var(--radius-md);
-  padding: 0.6rem 0.55rem;
-  margin-bottom: 0.15rem;
+  padding: 0.65rem 0.6rem 0.65rem 0.85rem;
+  margin-bottom: 0.2rem;
   box-shadow: none;
-  transition: background 0.16s var(--ease);
+  transition: background 0.18s var(--ease);
 }
 
+.st-key-about_card::before,
+.st-key-apikey_card::before,
+.st-key-source_card_0::before,
+.st-key-source_card_1::before,
+.st-key-source_card_2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-gradient);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transition: opacity 0.18s var(--ease), transform 0.18s var(--ease-spring);
+}
+
+.st-key-about_card:hover,
+.st-key-apikey_card:hover,
 .st-key-source_card_0:hover,
 .st-key-source_card_1:hover,
 .st-key-source_card_2:hover {
   background: var(--glass-fill-hover);
+}
+
+.st-key-about_card:hover::before,
+.st-key-apikey_card:hover::before,
+.st-key-source_card_0:hover::before,
+.st-key-source_card_1:hover::before,
+.st-key-source_card_2:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] {
@@ -179,11 +228,12 @@ textarea:focus-visible {
   padding: 0.55rem 0.4rem;
   font-weight: 500;
   border-radius: var(--radius-sm);
-  transition: background 0.16s var(--ease);
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] summary:hover {
   background: var(--glass-fill-hover);
+  color: var(--ink);
 }
 
 /* A source doc's info toggle is nested one level under its filename row
@@ -194,7 +244,7 @@ textarea:focus-visible {
 .st-key-source_card_2 [data-testid="stExpander"] {
   margin-left: 0.95rem;
   padding-left: 0.75rem;
-  border-left: 1.5px solid var(--glass-border);
+  border-left: 1.5px dashed var(--glass-border);
 }
 
 .st-key-source_card_0 [data-testid="stExpander"] summary,
@@ -211,7 +261,7 @@ textarea:focus-visible {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.6rem;
   margin-bottom: 0.15rem;
 }
 
@@ -219,25 +269,36 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: var(--violet-dim);
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: var(--accent-gradient-soft);
+  border: 1px solid var(--violet-line);
   color: var(--violet-bright);
   flex-shrink: 0;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease);
+}
+
+.st-key-about_card:hover .icon-badge,
+.st-key-apikey_card:hover .icon-badge,
+.st-key-source_card_0:hover .icon-badge,
+.st-key-source_card_1:hover .icon-badge,
+.st-key-source_card_2:hover .icon-badge {
+  transform: scale(1.08) rotate(-4deg);
+  box-shadow: 0 0 0 4px var(--violet-dim);
 }
 
 .card-header .icon-badge svg { width: 17px; height: 17px; }
 
 .card-header .card-title {
-  font-size: 17px;
+  font-size: 16.5px;
   font-weight: 600;
   color: var(--ink);
   letter-spacing: 0.001em;
 }
 
 .card-body-text {
-  font-size: 17px;
+  font-size: 16.5px;
   line-height: 1.65;
   color: var(--ink-muted);
 }
@@ -274,7 +335,7 @@ textarea:focus-visible {
 
 .source-citation {
   font-family: var(--font-mono);
-  font-size: 14.5px;
+  font-size: 14px;
   color: var(--ink);
   line-height: 1.55;
   margin-bottom: 0.4rem;
@@ -283,7 +344,7 @@ textarea:focus-visible {
 }
 
 .source-covers {
-  font-size: 15.5px;
+  font-size: 15px;
   color: var(--ink-faint);
   line-height: 1.55;
 }
@@ -294,9 +355,9 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  padding: 0.32rem 0.7rem;
+  padding: 0.34rem 0.75rem;
   border-radius: var(--radius-pill);
   margin-top: 0.4rem;
 }
@@ -304,11 +365,12 @@ textarea:focus-visible {
 .apikey-status--ok {
   color: var(--success);
   background: var(--success-dim);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  border: 1px solid rgba(52, 211, 153, 0.32);
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.06);
 }
 
 [data-testid="stSidebar"] [data-testid="stTextInput"] input {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.045);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   color: var(--ink);
@@ -327,12 +389,22 @@ textarea:focus-visible {
 }
 
 [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
-  box-shadow: 0 0 0 4px var(--violet-dim);
+  box-shadow: 0 0 0 4px var(--violet-dim), 0 2px 8px rgba(124, 111, 240, 0.5);
   background-color: var(--violet-bright) !important;
+  transition: box-shadow 0.18s var(--ease), transform 0.18s var(--ease-spring);
+}
+
+[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"]:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 6px var(--violet-dim), 0 2px 10px rgba(124, 111, 240, 0.6);
+}
+
+[data-testid="stSlider"] [data-baseweb="slider"] > div > div {
+  background: var(--accent-gradient) !important;
 }
 
 [data-testid="stCheckbox"] label {
-  font-size: 16.5px;
+  font-size: 16px;
   color: var(--ink-muted);
 }
 
@@ -347,7 +419,7 @@ textarea:focus-visible {
 
 .diag-row {
   font-family: var(--font-mono);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--ink-muted);
   line-height: 1.75;
   border-bottom: 1px dashed var(--glass-border);
@@ -358,22 +430,53 @@ textarea:focus-visible {
 .diag-row b { color: var(--violet-bright); font-weight: 600; }
 
 /* ===== Hero ================================================================
-   One deliberate focal point: icon in a bordered tile with a soft violet
-   halo, a tight sans display title, restrained supporting copy. */
+   One deliberate focal point: icon in a bordered tile with a rotating
+   conic-gradient halo, a bold gradient display title, restrained
+   supporting copy. Reads as the "app icon + name" moment of a modern
+   AI product rather than a plain banner. */
 
 .hero-wrap {
   position: relative;
   width: fit-content;
   max-width: 100%;
-  margin: 0 auto 1.8rem;
-  padding: 2.3rem 2.4rem;
+  margin: 0 auto 1.9rem;
+  padding: 2.4rem 2.6rem;
   border-radius: var(--radius-xl);
   border: 1px solid var(--glass-border);
   background:
-    radial-gradient(120% 160% at 0% 0%, rgba(139, 124, 246, 0.12), transparent 55%),
+    radial-gradient(130% 170% at 0% 0%, rgba(124, 111, 240, 0.16), transparent 55%),
+    radial-gradient(90% 140% at 100% 0%, rgba(34, 211, 238, 0.09), transparent 60%),
     var(--glass-fill);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   overflow: hidden;
   box-shadow: var(--shadow-ambient);
+}
+
+.hero-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.14),
+    transparent 30%,
+    transparent 70%,
+    rgba(34,211,238,0.12)
+  );
+
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+
+  mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+
+  pointer-events: none;
 }
 
 .hero-inner {
@@ -381,47 +484,66 @@ textarea:focus-visible {
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 1.3rem;
+  gap: 1.4rem;
   opacity: 0;
   transform: translateY(12px);
   animation: heroIn 0.6s var(--ease) 0.05s forwards;
 }
 
 .hero-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 78px;
-  height: 78px;
+  width: 82px;
+  height: 82px;
   border-radius: var(--radius-md);
-  background: var(--violet-dim);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--violet-line);
   color: var(--violet-bright);
   flex-shrink: 0;
-  box-shadow: 0 0 0 6px rgba(139, 124, 246, 0.05);
+  isolation: isolate;
 }
 
-.hero-icon svg { width: 44px; height: 44px; }
+.hero-icon::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  z-index: -1;
+  background: conic-gradient(from 0deg, #7C6FF0, #22D3EE, #F472B6, #7C6FF0);
+  opacity: 0.55;
+  filter: blur(10px);
+  animation: haloSpin 8s linear infinite;
+}
+
+.hero-icon svg {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 0 10px rgba(124, 111, 240, 0.55));
+}
 
 .hero-title {
   font-family: var(--font-ui);
-  font-size: clamp(2rem, 1.3rem + 2.4vw, 2.75rem);
+  font-size: clamp(2rem, 1.25rem + 2.5vw, 2.85rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  margin: 0 0 0.45rem;
-  background: linear-gradient(135deg, var(--ink) 35%, var(--violet-bright) 130%);
+  margin: 0 0 0.5rem;
+  background: var(--text-gradient);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: textShine 7s ease-in-out infinite alternate;
 }
 
 .hero-subtitle {
   font-family: var(--font-ui);
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   font-weight: 400;
   color: var(--ink-muted);
-  line-height: 1.6;
+  line-height: 1.62;
   max-width: 62ch;
   margin: 0;
   opacity: 0;
@@ -435,6 +557,7 @@ textarea:focus-visible {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-ambient);
+  backdrop-filter: blur(10px);
 }
 
 [data-testid="stAlertContentInfo"] { color: var(--ink); }
@@ -455,22 +578,36 @@ textarea:focus-visible {
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  padding: 0.65rem 0.95rem;
-  margin-bottom: 1.1rem;
-  gap: 0.85rem;
-  box-shadow: 0 14px 34px -20px rgba(0, 0, 0, 0.7);
-  animation: bubbleIn 0.3s var(--ease) both;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.15rem;
+  gap: 0.9rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 16px 38px -22px rgba(0, 0, 0, 0.75);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+  animation: bubbleIn 0.32s var(--ease) both;
+}
+
+[data-testid="stChatMessage"]:hover {
+  border-color: var(--glass-border-strong);
 }
 
 [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-  background: linear-gradient(180deg, rgba(139, 124, 246, 0.1), rgba(139, 124, 246, 0.03));
+  background: linear-gradient(180deg, rgba(124, 111, 240, 0.13), rgba(124, 111, 240, 0.035));
   border-color: var(--violet-line);
+}
+
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarCustom"]),
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.055), rgba(255,255,255,0.03));
+  border-color: rgba(34, 211, 238, 0.22);
 }
 
 /* Replace Streamlit's default avatars (a generic person glyph for the
    user, a plain emoji render for the assistant) with glyphs drawn from
    the same icon system as the hero brain / sidebar source cards, so the
-   whole conversation reads as one identity rather than mixed defaults. */
+   whole conversation reads as one identity rather than mixed defaults.
+   Each gets its own soft gradient disc + glow ring instead of a flat tint. */
 [data-testid="stChatMessageAvatarUser"],
 [data-testid="stChatMessageAvatarAssistant"],
 [data-testid="stChatMessageAvatarCustom"] {
@@ -478,12 +615,29 @@ textarea:focus-visible {
   width: 42px !important;
   height: 42px !important;
   min-width: 42px !important;
-  background: var(--violet-dim) !important;
-  border: 1px solid var(--violet-line) !important;
-  box-shadow: 0 0 0 1px var(--glass-border-strong);
+  border-radius: 50% !important;
+  border: 1px solid var(--glass-border-strong) !important;
   color: transparent !important;
   overflow: hidden;
   flex-shrink: 0;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+[data-testid="stChatMessageAvatarUser"] {
+  background: linear-gradient(145deg, rgba(124, 111, 240, 0.32), rgba(124, 111, 240, 0.08)) !important;
+  box-shadow: 0 0 0 1px var(--violet-line), 0 0 16px rgba(124, 111, 240, 0.25);
+}
+
+[data-testid="stChatMessageAvatarAssistant"],
+[data-testid="stChatMessageAvatarCustom"] {
+  background: linear-gradient(145deg, rgba(34, 211, 238, 0.3), rgba(124, 111, 240, 0.14)) !important;
+  box-shadow: 0 0 0 1px var(--cyan-line), 0 0 16px rgba(34, 211, 238, 0.22);
+}
+
+[data-testid="stChatMessage"]:hover [data-testid="stChatMessageAvatarUser"],
+[data-testid="stChatMessage"]:hover [data-testid="stChatMessageAvatarAssistant"],
+[data-testid="stChatMessage"]:hover [data-testid="stChatMessageAvatarCustom"] {
+  transform: scale(1.06);
 }
 
 [data-testid="stChatMessageAvatarUser"] > *,
@@ -499,9 +653,9 @@ textarea:focus-visible {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: 58%;
-  height: 58%;
-  background-color: var(--violet-bright);
+  width: 56%;
+  height: 56%;
+  background-color: var(--ink);
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
@@ -516,20 +670,22 @@ textarea:focus-visible {
    so both are targeted to make sure the emoji is actually replaced. */
 [data-testid="stChatMessageAvatarAssistant"]::before,
 [data-testid="stChatMessageAvatarCustom"]::before {
+  background-color: var(--cyan);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V5'/%3E%3Cpath d='M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4'/%3E%3Cpath d='M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5'/%3E%3Cpath d='M17.997 5.125a4 4 0 0 1 2.526 5.77'/%3E%3Cpath d='M18 18a4 4 0 0 0 2-7.464'/%3E%3Cpath d='M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517'/%3E%3Cpath d='M6 18a4 4 0 0 1-2-7.464'/%3E%3Cpath d='M6.003 5.125a4 4 0 0 0-2.526 5.77'/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V5'/%3E%3Cpath d='M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4'/%3E%3Cpath d='M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5'/%3E%3Cpath d='M17.997 5.125a4 4 0 0 1 2.526 5.77'/%3E%3Cpath d='M18 18a4 4 0 0 0 2-7.464'/%3E%3Cpath d='M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517'/%3E%3Cpath d='M6 18a4 4 0 0 1-2-7.464'/%3E%3Cpath d='M6.003 5.125a4 4 0 0 0-2.526 5.77'/%3E%3C/svg%3E");
 }
 
 /* User: clean outline person glyph, same stroke system as every other icon */
 [data-testid="stChatMessageAvatarUser"]::before {
+  background-color: var(--violet-bright);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
 }
 
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] li {
-  font-size: 28px;
-  line-height: 1.78;
+  font-size: 17.5px;
+  line-height: 1.7;
   color: var(--ink);
 }
 
@@ -537,17 +693,24 @@ textarea:focus-visible {
   margin-bottom: 0.7rem;
 }
 
+/* ===== Chat input — floating pill with an animated gradient glow ========= */
+
 [data-testid="stChatInput"] {
   background: var(--bg-panel-raised);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-ambient);
-  transition: border-color 0.22s var(--ease), box-shadow 0.22s var(--ease);
+  transition: border-color 0.22s var(--ease), box-shadow 0.22s var(--ease), transform 0.22s var(--ease);
+}
+
+[data-testid="stChatInput"]:hover {
+  border-color: var(--glass-border-strong);
 }
 
 [data-testid="stChatInput"]:focus-within {
   border-color: var(--violet);
-  box-shadow: var(--shadow-ambient), 0 0 0 4px var(--violet-dim);
+  box-shadow: var(--shadow-ambient), 0 0 0 4px var(--violet-dim), 0 0 26px rgba(34, 211, 238, 0.12);
+  transform: translateY(-1px);
 }
 
 /* Streamlit wraps the raw <textarea> in one or more internal divs, and
@@ -567,13 +730,23 @@ textarea:focus-visible {
 
 [data-testid="stChatInput"] textarea {
   color: var(--ink) !important;
-  font-size: 18px;
+  font-size: 16.5px;
   caret-color: var(--violet-bright);
 }
 
+[data-testid="stChatInput"] textarea::placeholder {
+  color: var(--ink-faint) !important;
+}
+
 [data-testid="stChatInput"] button {
-  background: var(--violet-gradient) !important;
+  background: var(--accent-gradient) !important;
   border-radius: var(--radius-pill) !important;
+  transition: transform 0.18s var(--ease-spring), filter 0.18s var(--ease) !important;
+}
+
+[data-testid="stChatInput"] button:hover {
+  transform: scale(1.08) !important;
+  filter: brightness(1.12) !important;
 }
 
 [data-testid="stChatInput"] button svg {
@@ -583,34 +756,41 @@ textarea:focus-visible {
 /* Sources-retrieved expander inside an assistant message */
 
 [data-testid="stChatMessage"] [data-testid="stExpander"] {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.025);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   margin-top: 0.6rem;
+  transition: border-color 0.18s var(--ease);
+}
+
+[data-testid="stChatMessage"] [data-testid="stExpander"]:hover {
+  border-color: var(--cyan-line);
 }
 
 [data-testid="stChatMessage"] [data-testid="stExpander"] summary {
-  font-size: 24px;
-  padding: 0.7rem 0.5rem;
+  font-size: 15px;
+  padding: 0.65rem 0.6rem;
+  font-weight: 500;
 }
 
 [data-testid="stChatMessage"] [data-testid="stExpander"] [data-testid="stText"],
 [data-testid="stChatMessage"] [data-testid="stExpander"] pre {
-  font-size: 24px;
-  line-height: 1.78;
+  font-size: 14.5px;
+  line-height: 1.7;
 }
 
 .source-chunk {
-  border-left: 2px solid var(--violet-line);
+  position: relative;
+  border-left: 2px solid var(--cyan-line);
   padding: 0.4rem 0 0.4rem 0.8rem;
   margin-bottom: 0.65rem;
 }
 
 .source-chunk-label {
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  color: var(--violet-bright);
+  color: var(--cyan);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -620,12 +800,14 @@ textarea:focus-visible {
 /* ===== Suggested-questions marquee ========================================
    Real st.button() elements laid out as a flex row: outer viewport clips +
    edge-fades, inner track gets a slow, subtle idle drift that pauses on
-   hover/focus so it never fights with reading or typing. */
+   hover/focus so it never fights with reading or typing. Each chip carries
+   its own accent color (set per chip below) so the row reads as a set of
+   distinct conversation starters rather than six identical pills. */
 
 .st-key-marquee_viewport {
   width: 100%;
   overflow: hidden;
-  margin: 0 auto 1.75rem;
+  margin: 0 auto 1.85rem;
 
   -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
@@ -636,7 +818,7 @@ textarea:focus-visible {
   align-items: center;
   flex-wrap: nowrap;
   width: max-content;
-  gap: 0.6rem;
+  gap: 0.65rem;
 
   animation: suggestedQuestionsFloat 9s ease-in-out infinite alternate;
   will-change: transform;
@@ -661,83 +843,133 @@ body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
   animation-play-state: paused;
 }
 
-/* Suggested questions — pill chips */
+/* Suggested questions — glass pill chips with a colored icon disc */
 .st-key-marquee_track [data-testid="stButton"] button {
   position: relative;
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
-  padding: 0.75rem 1.35rem 0.75rem 3.6rem !important;
+  padding: 0.75rem 1.4rem 0.75rem 3.65rem !important;
   color: var(--ink);
-  font-size: 1.02rem;
+  font-size: 0.98rem;
   font-weight: 500;
   white-space: nowrap;
-  min-height: 56px;
+  min-height: 54px;
   box-shadow: var(--shadow-ambient);
-  transition: transform 0.2s var(--ease), background 0.2s var(--ease),
+  transition: transform 0.22s var(--ease-spring), background 0.2s var(--ease),
     border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.015);
   background: var(--glass-fill-hover);
-  border-color: var(--violet-line);
-  box-shadow: var(--shadow-glow);
+  border-color: var(--chip-color, var(--violet-line));
+  box-shadow: 0 0 0 1px var(--chip-color, var(--violet-line)),
+    0 16px 34px -14px var(--chip-glow, rgba(124, 111, 240, 0.4));
 }
 
-/* Suggested-question icons */
+.st-key-marquee_track [data-testid="stButton"] button:active {
+  transform: translateY(-1px) scale(0.99);
+}
 
+/* Suggested-question icon disc */
 .st-key-marquee_track [data-testid="stButton"] button::before {
   content: "";
   position: absolute;
-  left: 1.1rem;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--chip-color-dim, var(--violet-dim));
+  transition: transform 0.22s var(--ease-spring);
+}
+
+.st-key-marquee_track [data-testid="stButton"] button:hover::before {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.st-key-marquee_track [data-testid="stButton"] button::after {
+  content: "";
+  position: absolute;
+  left: 1.35rem;
   top: 50%;
   transform: translateY(-50%);
   width: 19px;
   height: 19px;
-  background-color: var(--violet-bright);
+  background-color: var(--chip-color, var(--violet-bright));
 
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
-
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
 }
 
-/* Chip 0: brain / neural */
-.st-key-chip_0 button::before {
+/* Chip 0: brain / neural — indigo */
+.st-key-chip_0 button {
+  --chip-color: var(--violet-bright);
+  --chip-color-dim: var(--violet-dim);
+  --chip-glow: rgba(124, 111, 240, 0.4);
+}
+.st-key-chip_0 button::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 2a3.5 3.5 0 0 0-3.4 4.3A3.5 3.5 0 0 0 4 9.5a3.5 3.5 0 0 0 1.8 3.1A3.5 3.5 0 0 0 9 18a3.5 3.5 0 0 0 3-1.7A3.5 3.5 0 0 0 15 18a3.5 3.5 0 0 0 3.2-5.4A3.5 3.5 0 0 0 20 9.5a3.5 3.5 0 0 0-2.1-3.2A3.5 3.5 0 0 0 14.5 2 3.5 3.5 0 0 0 12 3.1 3.5 3.5 0 0 0 9.5 2Z'/%3E%3Cpath d='M12 3v18'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 2a3.5 3.5 0 0 0-3.4 4.3A3.5 3.5 0 0 0 4 9.5a3.5 3.5 0 0 0 1.8 3.1A3.5 3.5 0 0 0 9 18a3.5 3.5 0 0 0 3-1.7A3.5 3.5 0 0 0 15 18a3.5 3.5 0 0 0 3.2-5.4A3.5 3.5 0 0 0 20 9.5a3.5 3.5 0 0 0-2.1-3.2A3.5 3.5 0 0 0 14.5 2 3.5 3.5 0 0 0 12 3.1 3.5 3.5 0 0 0 9.5 2Z'/%3E%3Cpath d='M12 3v18'/%3E%3C/svg%3E");
 }
 
-/* Chip 1: clipboard / assessment */
-.st-key-chip_1 button::before {
+/* Chip 1: clipboard / assessment — teal */
+.st-key-chip_1 button {
+  --chip-color: #2DD4BF;
+  --chip-color-dim: rgba(45, 212, 191, 0.16);
+  --chip-glow: rgba(45, 212, 191, 0.4);
+}
+.st-key-chip_1 button::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='8' height='4' x='8' y='2' rx='1'/%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/%3E%3Cpath d='m9 14 2 2 4-4'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='8' height='4' x='8' y='2' rx='1'/%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/%3E%3Cpath d='m9 14 2 2 4-4'/%3E%3C/svg%3E");
 }
 
-/* Chip 2: television / media */
-.st-key-chip_2 button::before {
+/* Chip 2: television / media — pink */
+.st-key-chip_2 button {
+  --chip-color: var(--pink);
+  --chip-color-dim: var(--pink-dim);
+  --chip-glow: rgba(244, 114, 182, 0.4);
+}
+.st-key-chip_2 button::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m17 2-5 5-5-5'/%3E%3Crect width='20' height='15' x='2' y='7' rx='2'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m17 2-5 5-5-5'/%3E%3Crect width='20' height='15' x='2' y='7' rx='2'/%3E%3C/svg%3E");
 }
 
-/* Chip 3: activity / neurobiology */
-.st-key-chip_3 button::before {
+/* Chip 3: activity / neurobiology — amber */
+.st-key-chip_3 button {
+  --chip-color: #FBBF24;
+  --chip-color-dim: rgba(251, 191, 36, 0.16);
+  --chip-glow: rgba(251, 191, 36, 0.35);
+}
+.st-key-chip_3 button::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2'/%3E%3C/svg%3E");
 }
 
-/* Chip 4: scales / legal */
-.st-key-chip_4 button::before {
+/* Chip 4: scales / legal — sky blue */
+.st-key-chip_4 button {
+  --chip-color: #38BDF8;
+  --chip-color-dim: rgba(56, 189, 248, 0.16);
+  --chip-glow: rgba(56, 189, 248, 0.35);
+}
+.st-key-chip_4 button::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18'/%3E%3Cpath d='m19 8 3 8a5 5 0 0 1-6 0zV7'/%3E%3Cpath d='M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1'/%3E%3Cpath d='m5 8 3 8a5 5 0 0 1-6 0zV7'/%3E%3Cpath d='M7 21h10'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18'/%3E%3Cpath d='m19 8 3 8a5 5 0 0 1-6 0zV7'/%3E%3Cpath d='M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1'/%3E%3Cpath d='m5 8 3 8a5 5 0 0 1-6 0zV7'/%3E%3Cpath d='M7 21h10'/%3E%3C/svg%3E");
 }
 
-/* Chip 5: search / behavior */
-.st-key-chip_5 button::before {
+/* Chip 5: search / behavior — emerald */
+.st-key-chip_5 button {
+  --chip-color: #34D399;
+  --chip-color-dim: rgba(52, 211, 153, 0.16);
+  --chip-glow: rgba(52, 211, 153, 0.35);
+}
+.st-key-chip_5 button::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21 21-4.34-4.34'/%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21 21-4.34-4.34'/%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3C/svg%3E");
 }
@@ -745,16 +977,16 @@ body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
 /* ===== Buttons (kept for forward-compat) ================================== */
 
 .stButton > button {
-  background: var(--violet-gradient);
+  background: var(--accent-gradient);
   color: white;
   border: none;
   border-radius: var(--radius-sm);
   font-weight: 500;
-  transition: filter 0.2s var(--ease), transform 0.2s var(--ease);
+  transition: filter 0.2s var(--ease), transform 0.2s var(--ease-spring);
 }
 
 .stButton > button:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.1);
   transform: translateY(-1px);
 }
 
@@ -769,19 +1001,28 @@ body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
    adjust where a surface needs to read as denser (sidebar, diagnostics)
    or larger (hero, chat) than the base. */
 
-body, .stApp { font-size: 18px; }
+body, .stApp { font-size: 16.5px; }
 
-.stApp p, .stApp li { font-size: 18px; line-height: 1.72; }
+.stApp p, .stApp li { font-size: 16.5px; line-height: 1.68; }
 
-[data-testid="stSidebar"] { font-size: 16.5px; }
+[data-testid="stSidebar"] { font-size: 15.5px; }
 [data-testid="stSidebar"] p,
-[data-testid="stSidebar"] li { font-size: 16.5px; line-height: 1.62; }
+[data-testid="stSidebar"] li { font-size: 15.5px; line-height: 1.6; }
 
 /* ===== Animations =========================================================== */
 
 @keyframes auroraDrift {
-  0%   { background-position: 0% 0%, 100% 0%; }
-  100% { background-position: 8% 6%, 92% 8%; }
+  0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+  100% { background-position: 10% 8%, 88% 10%, 42% 92%; }
+}
+
+@keyframes haloSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes textShine {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 @keyframes heroIn {
@@ -798,6 +1039,8 @@ body, .stApp { font-size: 18px; }
 @media (prefers-reduced-motion: reduce) {
   .stApp::before { animation: none; }
   .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
+  .hero-title { animation: none; }
+  .hero-icon::before { animation: none; }
   [data-testid="stChatMessage"] { animation: none; }
   .st-key-about_card, .st-key-apikey_card,
   .st-key-source_card_0, .st-key-source_card_1, .st-key-source_card_2,
@@ -813,9 +1056,9 @@ body, .stApp { font-size: 18px; }
 /* ===== Responsive ============================================================ */
 
 @media (max-width: 900px) {
-  .hero-wrap { width: 100%; padding: 1.6rem 1.3rem; }
-  .hero-inner { gap: 0.85rem; }
-  .hero-icon { width: 56px; height: 56px; border-radius: var(--radius-sm); }
-  .hero-icon svg { width: 32px; height: 32px; }
-  .hero-subtitle { font-size: 1.05rem; }
+  .hero-wrap { width: 100%; padding: 1.7rem 1.4rem; }
+  .hero-inner { gap: 0.9rem; }
+  .hero-icon { width: 58px; height: 58px; border-radius: var(--radius-sm); }
+  .hero-icon svg { width: 33px; height: 33px; }
+  .hero-subtitle { font-size: 1.02rem; }
 }
