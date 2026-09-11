@@ -164,16 +164,58 @@ textarea:focus-visible {
 /* ===== Sidebar shell ===================================================== */
 
 [data-testid="stSidebar"] {
+  position: relative;
   background: linear-gradient(180deg, var(--bg-panel) 0%, #0a0b13 100%);
   border-right: 1px solid var(--glass-border);
   padding: 0 0.4rem;
+  overflow: hidden;
+}
+
+/* Abstract backdrop shapes — two soft blurred blobs pinned to the sidebar
+   box (not the scrolling inner div), drifting slowly. Purely decorative,
+   z-index kept below every row/card so text always stays crisp. */
+[data-testid="stSidebar"]::before {
+  content: "";
+  position: absolute;
+  top: -12%;
+  left: -30%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 111, 246, 0.28), transparent 70%);
+  filter: blur(30px);
+  z-index: 0;
+  pointer-events: none;
+  animation: sidebarBlobDrift 26s var(--ease) infinite alternate;
+}
+
+[data-testid="stSidebar"]::after {
+  content: "";
+  position: absolute;
+  bottom: -14%;
+  right: -28%;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.16), transparent 70%);
+  filter: blur(34px);
+  z-index: 0;
+  pointer-events: none;
+  animation: sidebarBlobDrift 30s var(--ease) infinite alternate-reverse;
 }
 
 [data-testid="stSidebar"] > div:first-child {
+  position: relative;
+  z-index: 1;
   padding-top: 1.5rem;
 }
 
-[data-testid="stSidebar"] h2 {
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.82rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -181,6 +223,18 @@ textarea:focus-visible {
   color: var(--ink-faint);
   margin: 1.3rem 0 0.55rem;
   padding-left: 0.55rem;
+}
+
+/* Small gradient tick before each section label — a quiet visual anchor
+   instead of a plain text row. */
+[data-testid="stSidebar"] h2::before,
+[data-testid="stSidebar"] h3::before {
+  content: "";
+  width: 3px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-gradient);
+  flex-shrink: 0;
 }
 
 /* ===== Sidebar nav rows ===================================================
@@ -197,14 +251,30 @@ textarea:focus-visible {
 .st-key-source_card_1,
 .st-key-source_card_2 {
   position: relative;
-  background: transparent;
   border: none;
   border-radius: var(--radius-md);
   padding: 0.65rem 0.6rem 0.65rem 0.85rem;
   margin-bottom: 0.2rem;
   box-shadow: none;
-  transition: background 0.18s var(--ease);
+  overflow: hidden;
+
+  /* rest state: transparent fill + an off-screen sheen gradient, ready to
+     sweep across on hover */
+  background-color: transparent;
+  background-image: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.07) 50%, transparent 68%);
+  background-repeat: no-repeat;
+  background-size: 220% 100%;
+  background-position: 160% 0;
+  transition: background-color 0.2s var(--ease), background-position 0.6s var(--ease);
 }
+
+/* Per-section accent: each row sets its own --row-color / --row-dim /
+   --row-line, everything else below just reads those variables. */
+.st-key-about_card       { --row-color: var(--cyan);          --row-dim: var(--cyan-dim);          --row-line: var(--cyan-line); }
+.st-key-source_card_0    { --row-color: var(--violet-bright); --row-dim: var(--violet-dim);        --row-line: var(--violet-line); }
+.st-key-source_card_1    { --row-color: #2DD4BF;              --row-dim: rgba(45, 212, 191, 0.16); --row-line: rgba(45, 212, 191, 0.4); }
+.st-key-source_card_2    { --row-color: var(--pink);          --row-dim: var(--pink-dim);          --row-line: rgba(244, 114, 182, 0.4); }
+.st-key-apikey_card      { --row-color: var(--success);       --row-dim: var(--success-dim);       --row-line: rgba(52, 211, 153, 0.4); }
 
 .st-key-about_card::before,
 .st-key-apikey_card::before,
@@ -218,7 +288,8 @@ textarea:focus-visible {
   bottom: 0.4rem;
   width: 3px;
   border-radius: var(--radius-pill);
-  background: var(--accent-gradient);
+  background: var(--row-color, var(--violet));
+  box-shadow: 0 0 10px var(--row-dim, transparent);
   opacity: 0;
   transform: scaleY(0.4);
   transition: opacity 0.18s var(--ease), transform 0.18s var(--ease-spring);
@@ -229,7 +300,8 @@ textarea:focus-visible {
 .st-key-source_card_0:hover,
 .st-key-source_card_1:hover,
 .st-key-source_card_2:hover {
-  background: var(--glass-fill-hover);
+  background-color: var(--glass-fill-hover);
+  background-position: -60% 0;
 }
 
 .st-key-about_card:hover::before,
@@ -242,23 +314,44 @@ textarea:focus-visible {
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] {
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
   box-shadow: none;
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.4rem;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"]:hover {
+  border-color: var(--violet-line);
+  background: var(--glass-fill-hover);
 }
 
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
-  padding: 0.55rem 0.4rem;
-  font-weight: 500;
+  padding: 0.6rem 0.5rem;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--violet-bright) !important;
   border-radius: var(--radius-sm);
   transition: background 0.16s var(--ease), color 0.16s var(--ease);
 }
 
-[data-testid="stSidebar"] [data-testid="stExpander"] summary:hover {
+[data-testid="stSidebar"] [data-testid="stExpander"] summary * {
+  color: var(--violet-bright) !important;
+  fill: var(--violet-bright) !important;
+  stroke: var(--violet-bright) !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"] summary::marker {
+  color: var(--violet-bright);
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"] summary:hover,
+[data-testid="stSidebar"] [data-testid="stExpander"] summary:hover * {
   background: var(--glass-fill-hover);
-  color: var(--ink);
+  color: var(--cyan) !important;
+  fill: var(--cyan) !important;
+  stroke: var(--cyan) !important;
 }
 
 /* A source doc's info toggle is nested one level under its filename row
@@ -267,18 +360,35 @@ textarea:focus-visible {
 .st-key-source_card_0 [data-testid="stExpander"],
 .st-key-source_card_1 [data-testid="stExpander"],
 .st-key-source_card_2 [data-testid="stExpander"] {
+  background: transparent;
+  border: none;
   margin-left: 0.95rem;
   padding-left: 0.75rem;
   border-left: 1.5px dashed var(--glass-border);
+}
+
+.st-key-source_card_0 [data-testid="stExpander"]:hover,
+.st-key-source_card_1 [data-testid="stExpander"]:hover,
+.st-key-source_card_2 [data-testid="stExpander"]:hover {
+  background: transparent;
+  border-left-color: var(--row-color, var(--glass-border));
 }
 
 .st-key-source_card_0 [data-testid="stExpander"] summary,
 .st-key-source_card_1 [data-testid="stExpander"] summary,
 .st-key-source_card_2 [data-testid="stExpander"] summary {
   font-size: 14.5px;
-  color: var(--ink-faint);
+  color: var(--ink-faint) !important;
   font-weight: 400;
   padding: 0.45rem 0.4rem;
+}
+
+.st-key-source_card_0 [data-testid="stExpander"] summary *,
+.st-key-source_card_1 [data-testid="stExpander"] summary *,
+.st-key-source_card_2 [data-testid="stExpander"] summary * {
+  color: var(--ink-faint) !important;
+  fill: var(--ink-faint) !important;
+  stroke: var(--ink-faint) !important;
 }
 
 /* Card header row: icon glyph + label */
@@ -297,11 +407,11 @@ textarea:focus-visible {
   width: 34px;
   height: 34px;
   border-radius: 11px;
-  background: var(--accent-gradient-soft);
-  border: 1px solid var(--violet-line);
-  color: var(--violet-bright);
+  background: var(--row-dim, var(--accent-gradient-soft));
+  border: 1px solid var(--row-line, var(--violet-line));
+  color: var(--row-color, var(--violet-bright));
   flex-shrink: 0;
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
 }
 
 .st-key-about_card:hover .icon-badge,
@@ -309,8 +419,8 @@ textarea:focus-visible {
 .st-key-source_card_0:hover .icon-badge,
 .st-key-source_card_1:hover .icon-badge,
 .st-key-source_card_2:hover .icon-badge {
-  transform: scale(1.08) rotate(-4deg);
-  box-shadow: 0 0 0 4px var(--violet-dim);
+  transform: scale(1.1) rotate(-6deg);
+  box-shadow: 0 0 0 5px var(--row-dim, var(--violet-dim));
 }
 
 .card-header .icon-badge svg { width: 17px; height: 17px; }
@@ -388,10 +498,21 @@ textarea:focus-visible {
 }
 
 .apikey-status--ok {
+  position: relative;
   color: var(--success);
   background: var(--success-dim);
   border: 1px solid rgba(52, 211, 153, 0.32);
   box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.06);
+}
+
+.apikey-status--ok::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  animation: apikeyPulse 2.6s var(--ease) infinite;
+  pointer-events: none;
 }
 
 [data-testid="stSidebar"] [data-testid="stTextInput"] input {
@@ -480,7 +601,6 @@ textarea:focus-visible {
 
 .hero-wrap::after {
   content: "";
-
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -494,12 +614,11 @@ textarea:focus-visible {
     rgba(34,211,238,0.12)
   );
 
-  -webkit-mask: linear-gradient(#fff 0 0) content-box,
-                linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
 
-  mask: linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
+  /* ADD THIS */
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
 
   pointer-events: none;
@@ -1060,6 +1179,17 @@ body, .stApp { font-size: 16.5px; }
   100% { transform: translate3d(3%, -2%, 0) scale(0.98); }
 }
 
+@keyframes sidebarBlobDrift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(6%, 8%) scale(1.15); }
+}
+
+@keyframes apikeyPulse {
+  0%   { transform: scale(1);    opacity: 0.7; }
+  70%  { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
 @keyframes haloSpin {
   to { transform: rotate(360deg); }
 }
@@ -1083,6 +1213,9 @@ body, .stApp { font-size: 16.5px; }
 @media (prefers-reduced-motion: reduce) {
   .stApp::before { animation: none; }
   .stApp::after { animation: none; }
+  [data-testid="stSidebar"]::before,
+  [data-testid="stSidebar"]::after { animation: none; }
+  .apikey-status--ok::after { animation: none; opacity: 0; }
   .hero-inner, .hero-subtitle { animation: none; opacity: 1; transform: none; }
   .hero-title { animation: none; }
   .hero-icon::before { animation: none; }
