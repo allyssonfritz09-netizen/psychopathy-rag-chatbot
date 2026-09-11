@@ -823,107 +823,107 @@ textarea:focus-visible {
   margin-bottom: 0.2rem;
 }
 
-/* ===== Suggested-questions marquee ========================================
-   Real st.button() elements laid out as a flex row: outer viewport clips +
-   edge-fades, inner track gets a slow, subtle idle drift that pauses on
-   hover/focus so it never fights with reading or typing. Each chip carries
-   its own accent color (set per chip below) so the row reads as a set of
-   distinct conversation starters rather than six identical pills. */
+/* ===== Suggested questions — static card grid =============================
+   Previously a horizontally auto-scrolling row of pill chips. Replaced with
+   a still grid of question cards: easier to read in full, easier to click
+   (nothing moving under the cursor), and it scales down to a single column
+   on narrow screens instead of relying on a scroll gesture. Real
+   st.button() elements — same markup/keys as before, only the layout and
+   card shape changed. Each card keeps its own accent color (set per chip
+   further down) so the grid reads as six distinct conversation starters. */
 
 .st-key-marquee_viewport {
   width: 100%;
-  overflow: hidden;
-  margin: 0 auto 1.85rem;
-
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  margin: 0 auto 2rem;
 }
 
 .st-key-marquee_track {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  width: max-content;
-  gap: 0.65rem;
-
-  animation: suggestedQuestionsFloat 9s ease-in-out infinite alternate;
-  will-change: transform;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
 }
 
 .st-key-marquee_track [data-testid="stButton"] {
-  flex: 0 0 auto;
+  width: 100%;
+  height: 100%;
 }
 
-@keyframes suggestedQuestionsFloat {
-  0%   { transform: translateX(24px); }
-  100% { transform: translateX(-24px); }
-}
-
-.st-key-marquee_viewport:hover .st-key-marquee_track,
-.st-key-marquee_viewport:focus-within .st-key-marquee_track {
-  animation-play-state: paused;
-}
-
-/* Stop suggested-question movement while typing */
-body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
-  animation-play-state: paused;
-}
-
-/* Suggested questions — glass pill chips with a colored icon disc */
+/* Suggested questions — static glass cards, icon badge + wrapped text */
 .st-key-marquee_track [data-testid="stButton"] button {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+  height: 100%;
+  min-height: 112px;
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-pill);
-  padding: 0.75rem 1.4rem 0.75rem 3.65rem !important;
+  border-radius: var(--radius-lg);
+  padding: 1.05rem 1.15rem 1.15rem !important;
   color: var(--ink);
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   font-weight: 500;
-  white-space: nowrap;
-  min-height: 54px;
+  line-height: 1.45;
+  white-space: normal;
+  text-align: left;
   box-shadow: var(--shadow-ambient);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: chipIn 0.5s var(--ease) forwards;
   transition: transform 0.22s var(--ease-spring), background 0.2s var(--ease),
     border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 
+/* Staggered entrance — one chip after another instead of all six popping
+   in at once. Purely additive, doesn't affect load/render order. */
+.st-key-chip_0 button { animation-delay: 0.02s; }
+.st-key-chip_1 button { animation-delay: 0.08s; }
+.st-key-chip_2 button { animation-delay: 0.14s; }
+.st-key-chip_3 button { animation-delay: 0.2s; }
+.st-key-chip_4 button { animation-delay: 0.26s; }
+.st-key-chip_5 button { animation-delay: 0.32s; }
+
+@keyframes chipIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .st-key-marquee_track [data-testid="stButton"] button:hover {
-  transform: translateY(-3px) scale(1.015);
+  transform: translateY(-4px);
   background: var(--glass-fill-hover);
   border-color: var(--chip-color, var(--violet-line));
   box-shadow: 0 0 0 1px var(--chip-color, var(--violet-line)),
-    0 16px 34px -14px var(--chip-glow, rgba(124, 111, 240, 0.4));
+    0 18px 38px -16px var(--chip-glow, rgba(124, 111, 240, 0.4));
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:active {
-  transform: translateY(-1px) scale(0.99);
+  transform: translateY(-1px);
 }
 
-/* Suggested-question icon disc */
+/* Icon badge — sits above the question text now instead of inline-left */
 .st-key-marquee_track [data-testid="stButton"] button::before {
   content: "";
-  position: absolute;
-  left: 0.85rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: var(--chip-color-dim, var(--violet-dim));
   transition: transform 0.22s var(--ease-spring);
+  flex-shrink: 0;
 }
 
 .st-key-marquee_track [data-testid="stButton"] button:hover::before {
-  transform: translateY(-50%) scale(1.08);
+  transform: scale(1.08) rotate(-4deg);
 }
 
 .st-key-marquee_track [data-testid="stButton"] button::after {
   content: "";
   position: absolute;
-  left: 1.35rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 19px;
-  height: 19px;
+  left: calc(1.15rem + 0.32rem);
+  top: calc(1.05rem + 0.32rem);
+  width: 18px;
+  height: 18px;
   background-color: var(--chip-color, var(--violet-bright));
 
   mask-repeat: no-repeat;
@@ -932,6 +932,18 @@ body:has([data-testid="stChatInput"]:focus-within) .st-key-marquee_track {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
+}
+
+@media (max-width: 900px) {
+  .st-key-marquee_track {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .st-key-marquee_track {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* Chip 0: brain / neural — indigo */
@@ -1081,8 +1093,10 @@ body, .stApp { font-size: 16.5px; }
   .stButton > button {
     transition: none;
   }
-  .st-key-marquee_track {
+  .st-key-marquee_track [data-testid="stButton"] button {
     animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
