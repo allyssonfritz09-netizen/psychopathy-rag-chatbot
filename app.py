@@ -533,9 +533,7 @@ st.markdown(
         <div>
           <p class="hero-eyebrow">Peer-reviewed sources only</p>
           <p class="hero-title">Understanding Psychopathy</p>
-          <p class="hero-subtitle">Every answer traces back to a specific passage in
-          one of the three papers below — nothing outside them, nothing from
-          general training knowledge.</p>
+          <p class="hero-subtitle">A research-grounded guide to psychopathy, exploring its etiology, clinical assessment, and portrayal in media.</p>
         </div>
       </div>
       <div class="hero-citations">{hero_citations_html}</div>
