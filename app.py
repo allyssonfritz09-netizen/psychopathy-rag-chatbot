@@ -600,7 +600,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for msg in st.session_state.messages:
-    avatar = "🧠" if msg["role"] == "assistant" else None
+    avatar = None
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
         if msg["role"] == "assistant" and msg.get("sources"):
@@ -652,7 +652,7 @@ if user_query:
     with st.chat_message("user"):
         st.markdown(user_query)
 
-    with st.chat_message("assistant", avatar="🧠"):
+    with st.chat_message("assistant"):
         with st.spinner("Retrieving context and generating an answer..."):
             try:
                 answer, retrieved_docs = answer_query(

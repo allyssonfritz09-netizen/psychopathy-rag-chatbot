@@ -118,6 +118,26 @@
   z-index: 1;
 }
 
+/* Center the hero + suggestion chips vertically in the space above the
+   chat input, but ONLY before any conversation exists. Scoped with :has()
+   to the empty state on purpose: an earlier version applied this flex
+   layout to .block-container unconditionally, which also wraps
+   Streamlit's chat-input bar -- turning that container into a flex box
+   broke the input's sticky/fixed anchor to the bottom of the viewport
+   once a real conversation was long enough to scroll, stranding the
+   input bar mid-page (see bug report). Gating on the absence of
+   [data-testid="stChatMessage"] means this rule stops applying the
+   moment the first message is sent, so the chat input's normal
+   positioning is completely untouched during an actual conversation --
+   only the empty welcome state gets centered. Presentation-only -- no
+   effect on chat logic or state. */
+.block-container:not(:has([data-testid="stChatMessage"])) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 9rem);
+}
+
 /* Instrument dot-grid + a whisper of film grain, scoped to the content
    column (moved off the fixed app-level layers above so it doesn't fight
    their animation) and faded out toward the bottom of the page. */
@@ -764,6 +784,7 @@ textarea:focus-visible {
   border-radius: 50% !important;
   border: 1px solid var(--glass-border-strong) !important;
   color: transparent !important;
+  font-size: 0 !important;
   overflow: hidden;
   flex-shrink: 0;
   transition: transform 0.2s var(--ease-spring);
